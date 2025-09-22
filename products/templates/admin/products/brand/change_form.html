@@ -1,0 +1,45 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">
+    <style>
+        .field-image img {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 10px 0;
+            display: block;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        .help {
+            color: #666;
+            font-size: 11px;
+            margin: 0 0 0 5px;
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block after_field_sets %}
+    {{ block.super }}
+    {% if original %}
+        <div class="module aligned">
+            <h2>{% trans 'Brand Information' %}</h2>
+            <div class="form-row">
+                <div>
+                    <label>{% trans 'Created:' %}</label>
+                    <div class="readonly">{{ original.created_at|date:"DATETIME_FORMAT" }}</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>{% trans 'Last Updated:' %}</label>
+                    <div class="readonly">{{ original.updated_at|date:"DATETIME_FORMAT" }}</div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

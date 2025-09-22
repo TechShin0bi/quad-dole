@@ -1,0 +1,59 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register - ATV Parts Store{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-800">Create your account</h2>
+        <p class="text-gray-600 mt-2">Already have an account? <a href="{% url 'users:login' %}" class="text-blue-600 hover:text-blue-800">Sign in</a></p>
+    </div>
+    
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        {{ form|crispy }}
+        
+        <div class="flex items-start">
+            <div class="flex items-center h-5">
+                <input id="terms" name="terms" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" required>
+            </div>
+            <div class="ml-3 text-sm">
+                <label for="terms" class="font-medium text-gray-700">I agree to the <a href="#" class="text-blue-600 hover:text-blue-500">Terms of Service</a> and <a href="#" class="text-blue-600 hover:text-blue-500">Privacy Policy</a></label>
+            </div>
+        </div>
+        
+        <div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Create Account
+            </button>
+        </div>
+    </form>
+    
+    <div class="mt-6">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">Or sign up with</span>
+            </div>
+        </div>
+        
+        <div class="mt-6 grid grid-cols-2 gap-3">
+            <div>
+                <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Sign up with Google</span>
+                    <i class="fab fa-google h-5 w-5"></i>
+                </a>
+            </div>
+            <div>
+                <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Sign up with Facebook</span>
+                    <i class="fab fa-facebook-f h-5 w-5"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

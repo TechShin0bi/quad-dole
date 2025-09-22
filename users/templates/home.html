@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative bg-gray-900">
+    <img src="{% static 'images/hero.jpg' %}" alt="Quad" class="w-full h-[450px] object-cover opacity-80">
+    </section>
+
+<!-- Categories / Marques Section -->
+<section class="container bg-gray-200 my-2 w-full md:max-w-1/2 mx-auto block py-10">
+    <div class="container mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center uppercase mb-2">JIMQUAD39</h2>
+        <h2 class="text-2xl text-gray-700 font-semibold text-center">Découvrez nos pièces détachées.</h2>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="bg-red-600 text-white py-10">
+    <div class="container mx-auto text-center px-6">
+        <h2 class="text-3xl font-bold uppercase">Commandez vos pièces directement en ligne</h2>
+        <p class="mt-3 text-lg">Livraison rapide dans toute la France • Paiement 100% sécurisé</p>
+        <a href="" class="mt-6 inline-block bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100">
+            Trouvez ma pièce
+        </a>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="bg-white py-12">
+    <div class="container mx-auto grid md:grid-cols-2 gap-10 items-center px-6">
+        <div>
+            <h3 class="text-2xl font-bold uppercase mb-4">À propos de Jimquad</h3>
+            <p class="text-gray-700 leading-relaxed">
+                Spécialiste des quads depuis plus de 15 ans, Jimquad vous propose une large sélection
+                de pièces détachées et accessoires pour toutes les grandes marques.
+                Nous assurons un service de proximité et de conseil personnalisé.
+            </p>
+            <a href="" class="mt-4 inline-block text-red-600 font-semibold hover:underline">En savoir plus →</a>
+        </div>
+        <img src="{% static 'images/photo-boutique.jpg' %}" alt="Boutique Jimquad" class="rounded-lg shadow-lg">
+    </div>
+</section>
+
+<!-- Testimonials / Services -->
+<section class="bg-gray-100 py-12">
+    <div class="container mx-auto text-center px-6">
+        <h3 class="text-2xl font-bold uppercase mb-8">Nos Services</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h4 class="font-bold mb-2">Carte grise</h4>
+                <p class="text-gray-600 text-sm">Service rapide de carte grise disponible directement en magasin.</p>
+            </div>
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h4 class="font-bold mb-2">Rachat de quads</h4>
+                <p class="text-gray-600 text-sm">Nous rachetons vos anciens quads toutes marques pour pièces ou occasion.</p>
+            </div>
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h4 class="font-bold mb-2">Retrait en boutique</h4>
+                <p class="text-gray-600 text-sm">Commandez en ligne et retirez gratuitement vos pièces dans notre magasin.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% if debug %}
+<script src="{% url 'django_browser_reload:reload' %}"></script>
+{% endif %}
