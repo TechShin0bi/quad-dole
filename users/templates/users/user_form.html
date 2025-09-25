@@ -1,0 +1,153 @@
+{% extends 'admin/base_admin.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un utilisateur - Jimquad39{% endblock %}
+
+{% block admin_content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'users:user-list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-red-600">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    Utilisateurs
+                </a>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">
+                        {% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un utilisateur
+                    </span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                {% if form.instance.pk %}
+                    Modifier l'utilisateur
+                {% else %}
+                    Ajouter un nouvel utilisateur
+                {% endif %}
+            </h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                {% if form.instance.pk %}
+                    Mettez à jour les informations de l'utilisateur ci-dessous.
+                {% else %}
+                    Remplissez les informations pour créer un nouvel utilisateur.
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="px-4 py-5 sm:p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        {{ form.email|as_crispy_field }}
+                    </div>
+                    
+                    <div class="sm:col-span-3">
+                        {{ form.first_name|as_crispy_field }}
+                    </div>
+                    
+                    <div class="sm:col-span-3">
+                        {{ form.last_name|as_crispy_field }}
+                    </div>
+                    
+                    {% if not form.instance.pk %}
+                        <div class="sm:col-span-3">
+                            {{ form.password1|as_crispy_field }}
+                        </div>
+                        
+                        <div class="sm:col-span-3">
+                            {{ form.password2|as_crispy_field }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="sm:col-span-6 border-t border-gray-200 pt-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Permissions</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    {{ form.is_active }}
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="{{ form.is_active.id_for_label }}" class="font-medium text-gray-700">Compte actif</label>
+                                    <p class="text-gray-500">Désactivez cette option pour désactiver le compte de l'utilisateur.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    {{ form.is_staff }}
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="{{ form.is_staff.id_for_label }}" class="font-medium text-gray-700">Accès à l'administration</label>
+                                    <p class="text-gray-500">L'utilisateur pourra se connecter à l'interface d'administration.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-5">
+                    <div class="flex justify-end space-x-3">
+                        <a href="{% url 'users:user-list' %}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Annuler
+                        </a>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            {% if form.instance.pk %}
+                                Mettre à jour
+                            {% else %}
+                                Créer l'utilisateur
+                            {% endif %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add custom styling to checkboxes
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.classList.add('focus:ring-red-500', 'h-4', 'w-4', 'text-red-600', 'border-gray-300', 'rounded');
+        });
+    });
+</script>
+{% endblock %}

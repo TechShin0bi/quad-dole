@@ -2,11 +2,22 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 from .forms import CustomPasswordResetForm
+from .views import (
+    UserListView, UserCreateView, 
+    UserUpdateView, UserDeleteView
+)
 
 app_name = 'users'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    
+    # User Management URLs
+    path('users/', UserListView.as_view(), name='user-list'),
+    path('users/add/', UserCreateView.as_view(), name='user-add'),
+    path('users/<int:pk>/edit/', UserUpdateView.as_view(), name='user-edit'),
+    path('users/<int:pk>/delete/', UserDeleteView.as_view(), name='user-delete'),
+    
     # Authentication URLs
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),

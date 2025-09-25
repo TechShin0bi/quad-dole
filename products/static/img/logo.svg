@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="200" height="60" rx="8" fill="#DC2626"/>
+    
+    <!-- JQ Text -->
+    <path d="M40 40V20H45V36H55V40H40Z" fill="white"/>
+    <path d="M65 40V20H85V25H70V28H83V32H70V36H85V40H65Z" fill="white"/>
+    
+    <!-- ATV Icon -->
+    <path d="M100 30C100 35.5228 95.5228 40 90 40C84.4772 40 80 35.5228 80 30C80 24.4772 84.4772 20 90 20C95.5228 20 100 24.4772 100 30Z" fill="white" fill-opacity="0.2"/>
+    <path d="M90 25C92.7614 25 95 27.2386 95 30C95 32.7614 92.7614 35 90 35C87.2386 35 85 32.7614 85 30C85 27.2386 87.2386 25 90 25Z" fill="white"/>
+    <path d="M90 28C88.3431 28 87 29.3431 87 31C87 32.6569 88.3431 34 90 34C91.6569 34 93 32.6569 93 31C93 29.3431 91.6569 28 90 28Z" fill="#DC2626"/>
+    
+    <!-- Quad Text -->
+    <path d="M110 40V20H135V25H115V28H130V32H115V40H110Z" fill="white"/>
+    <path d="M140 40V20H145L153 34V20H158V40H153L145 26V40H140Z" fill="white"/>
+    <path d="M165 40L160 20H165L169 36L173 20H178L174 40H169L167 28L165 40Z" fill="white"/>
+</svg>

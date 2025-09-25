@@ -68,12 +68,30 @@
                    :class="{'transform rotate-180': productsOpen}"></i>
             </a>
             <div x-show="productsOpen" class="mt-1 ml-4 pl-6 border-l-2 border-gray-700 space-y-1">
-                <a href="#" class="block py-2 px-3 text-xs font-medium rounded-md transition-colors duration-200
-                                 hover:bg-gray-800 hover:text-emerald-400 text-gray-300">All Products</a>
-                <a href="#" class="block py-2 px-3 text-xs font-medium rounded-md transition-colors duration-200
-                                 hover:bg-gray-800 hover:text-emerald-400 text-gray-300">Add New</a>
-                <a href="#" class="block py-2 px-3 text-xs font-medium rounded-md transition-colors duration-200
-                                 hover:bg-gray-800 hover:text-emerald-400 text-gray-300">Categories</a>
+                <a href="{% url 'products:product-list' %}" 
+                   class="flex items-center py-2 px-3 text-xs font-medium rounded-md transition-colors duration-200
+                          hover:bg-gray-800 hover:text-emerald-400 text-gray-300">
+                    <i class="fas fa-cube w-4 h-4 mr-2"></i>
+                    <span>All Products</span>
+                </a>
+                <a href="{% url 'products:productmodel-list' %}" 
+                   class="flex items-center py-2 px-3 text-xs font-medium rounded-md transition-colors duration-200
+                          hover:bg-gray-800 hover:text-emerald-400 text-gray-300">
+                    <i class="fas fa-plus-circle w-4 h-4 mr-2"></i>
+                    <span>Product Models</span>
+                </a>
+                <a href="{% url 'products:admin-brand-list' %}" 
+                   class="flex items-center py-2 px-3 text-xs font-medium rounded-md transition-colors duration-200
+                          hover:bg-gray-800 hover:text-emerald-400 text-gray-300">
+                    <i class="fas fa-tags w-4 h-4 mr-2"></i>
+                    <span>Brands</span>
+                </a>
+                <a href="{% url 'products:category-list' %}" 
+                   class="flex items-center py-2 px-3 text-xs font-medium rounded-md transition-colors duration-200
+                          hover:bg-gray-800 hover:text-emerald-400 text-gray-300">
+                    <i class="fas fa-folder w-4 h-4 mr-2"></i>
+                    <span>Categories</span>
+                </a>
             </div>
         </div>
 
@@ -90,13 +108,13 @@
         </a>
 
         <!-- Customers -->
-        <a href="#"
+        <a href="{% url 'users:user-list'%}"
            class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ease-in-out group text-gray-300 hover:bg-gray-800 hover:text-white">
             <div class="flex items-center space-x-3">
                 <div class="p-1.5 rounded-lg bg-gray-700 group-hover:bg-purple-600">
                     <i class="fas fa-users w-4 h-4 text-center"></i>
                 </div>
-                <span>Customers</span>
+                <span>Users & Clients</span>
             </div>
         </a>
 

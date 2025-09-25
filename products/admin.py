@@ -1,13 +1,42 @@
 from django.contrib import admin
-from .models import Brand, Category
 from django.utils.html import format_html
+from .models import Brand, Category, Product, ProductModel
 
-
+@admin.register(ProductModel)
+class ProductModelAdmin(admin.ModelAdmin):
+    list_display = ('name', 'brand', 'created_at')
+    list_filter = ('brand',)
+    search_fields = ('name', 'brand__name', 'description')
+    readonly_fields = ('created_at', 'updated_at')
+    list_select_related = ('brand',)
+    autocomplete_fields = ('brand',)
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'brand', 'description')
+                }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
 class BrandAdmin(admin.ModelAdmin):
     list_display = ('name', 'display_image', 'created_at', 'updated_at')
     search_fields = ('name',)
-    prepopulated_fields = {'slug': ('name',)}
     list_per_page = 20
+    list_display_links = ('name', 'display_image')
+    readonly_fields = ('created_at', 'updated_at')
+    change_form_template = 'admin/products/brand/change_form.html'
+    change_list_template = 'admin/products/brand/change_list.html'
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'image')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
 
     def display_image(self, obj):
         if obj.image:
@@ -17,10 +46,78 @@ class BrandAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'created_at', 'updated_at')
+    list_display = ('name', 'created_at', 'updated_at')
     search_fields = ('name', 'description')
-    prepopulated_fields = {'slug': ('name',)}
     list_per_page = 20
+    list_display_links = ('name',)
+    readonly_fields = ('created_at', 'updated_at')
+    change_form_template = 'admin/products/category/change_form.html'
+    change_list_template = 'admin/products/category/change_list.html'
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'description')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+# Register your models here.
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'get_brand', 'category', 'display_image', 'price', 'status_badge', 'created_at')
+    list_filter = ('created_at', 'updated_at', 'model__brand', 'category')
+    list_editable = ('price',)
+    search_fields = ('name', 'model__brand__name', 'category__name')
+    autocomplete_fields = ('model', 'category')
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+    list_per_page = 20
+    save_on_top = True
+    change_form_template = 'admin/products/product/change_form.html'
+    change_list_template = 'admin/products/product/change_list.html'
+    
+    def get_brand(self, obj):
+        return obj.model.brand if obj.model else None
+    get_brand.short_description = 'Marque'
+    get_brand.admin_order_field = 'model__brand__name'
+    
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'category', 'model', 'price', 'description', 'is_active')
+        }),
+        ('Images', {
+            'fields': ('image',),
+            'classes': ('wide', 'extrapad'),
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',),
+        }),
+    )
+    
+    readonly_fields = ('created_at', 'updated_at', 'image_preview')
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-width: 200px; height: auto;" />', obj.image.url)
+        return "No Image"
+    image_preview.short_description = 'Preview'
+    
+    def display_image(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="width: 50px; height: auto;" />', obj.image.url)
+        return "No Image"
+    display_image.short_description = 'Image'
+    
+    def status_badge(self, obj):
+        return 'Active'  # Simple status since we don't track availability anymore
+    status_badge.short_description = 'Status'
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('model__brand', 'category')
 
 
 # Register your models here.

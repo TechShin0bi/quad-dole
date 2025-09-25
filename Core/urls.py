@@ -18,15 +18,37 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import TemplateView
+from django.contrib.auth import views as auth_views
+from django.conf.urls import handler400, handler403, handler404, handler500
 from users.views import home
 
-urlpatterns = [
-    path('', home, name='home'),
-    path('users/', include('users.urls')),
-    path("__reload__/", include("django_browser_reload.urls")),
-    path('admin/', admin.site.urls),
+# Import error handlers
+from products.views.error_views import bad_request, permission_denied, page_not_found, server_error
 
+# Configure error handlers
+handler400 = 'products.views.error_views.bad_request'
+handler403 = 'products.views.error_views.permission_denied'
+handler404 = 'products.views.error_views.page_not_found'
+handler500 = 'products.views.error_views.server_error'
+
+urlpatterns = [
+    # Home
+    path('', home, name='home'),
+    
+    # Apps
+    path('', include('products.urls')),
+    path('users/', include('users.urls')),
+path("admins/", include("admins.urls", namespace="admins")),
+    
+    # Admin
+    path('admin/', admin.site.urls),
+    
+    # Authentication
+    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
+    
+    # Development
+    path("__reload__/", include("django_browser_reload.urls")),
 ]
 
 # Serve media files in development

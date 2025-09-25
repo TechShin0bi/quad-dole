@@ -50,35 +50,35 @@
 </head>
 <body class="bg-gray-100">
 
-    <div class="flex h-screen bg-gray-100" x-data="{ sidebarOpen: false }">
+<div class="flex h-screen bg-gray-100" x-data="{ sidebarOpen: false }">
 
-        <!-- Mobile sidebar overlay -->
-        <div class="overlay"
-             :class="{'open': sidebarOpen}"
-             @click="sidebarOpen = false"></div>
-    
-        <!-- Sidebar -->
-        {% include "admin/_sidebar.html" %}
-    
-        <!-- Main Content -->
-        <div class="admin-content flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
-            {% include "admin/_header.html" %}
-    
-            <!-- Page Content -->
-            <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
-                {% block admin_content %}
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Dashboard Overview</h2>
-                    <!-- Page specific content -->
-                </div>
-                {% endblock %}
-            </main>
-    
-            <!-- Footer -->
-            {% include "admin/_footer.html" %}
-        </div>
+    <!-- Mobile sidebar overlay -->
+    <div class="overlay"
+         :class="{'open': sidebarOpen}"
+         @click="sidebarOpen = false"></div>
+
+    <!-- Sidebar -->
+    {% include "admin/_sidebar.html" %}
+
+    <!-- Main Content -->
+    <div class="admin-content flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        {% include "admin/_header.html" %}
+
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+            {% block admin_content %}
+            {% comment %} <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Dashboard Overview</h2>
+                <!-- Page specific content -->
+            </div> {% endcomment %}
+            {% endblock %}
+        </main>
+
+        <!-- Footer -->
+        {% include "admin/_footer.html" %}
     </div>
+</div>
 
 {% block extra_js %}
 <script>

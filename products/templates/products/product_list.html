@@ -1,0 +1,102 @@
+{% extends 'products/base_list.html' %}
+{% load static %}
+
+{% block title %}Produits - Jimquad39{% endblock %}
+
+{% block page_title %}Nos Produits{% endblock %}
+{% block page_subtitle %}Découvrez notre sélection de pièces détachées pour ATV/UTV{% endblock %}
+
+{% block header_actions %}
+    {% if user.is_staff %}
+        <a href="{% url 'products:product-create' %}" 
+           class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center space-x-2">
+            <i class="fas fa-plus"></i>
+            <span>Ajouter</span>
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block list_content %}
+    <!-- Product Grid -->
+    {% if page_obj %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for product in page_obj %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <a href="{{ product.get_absolute_url }}" class="block">
+                        <div class="h-48 bg-gray-100 overflow-hidden relative">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                                    <i class="fas fa-box-open text-gray-300 text-6xl"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Product Badges -->
+                            <div class="absolute top-2 right-2 flex flex-col space-y-1">
+                                <!-- Availability badges removed -->
+                                {% if product.featured %}
+                                    <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                        <i class="fas fa-star"></i> En vedette
+                                    </span>
+                                {% endif %}
+                                {% if product.discount_price %}
+                                    <span class="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                        <i class="fas fa-tag"></i> -{{ product.get_discount_percentage }}%
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-semibold text-gray-900">{{ product.name|truncatechars:30 }}</h3>
+                                <span class="text-xs text-gray-500">
+                                    #{{ product.sku|default:'N/A' }}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-2">{{ product.brand.name }}</p>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    {% if product.discount_price %}
+                                        <span class="text-lg font-bold text-red-600">{{ product.discount_price|floatformat:2 }} €</span>
+                                        <span class="text-sm text-gray-500 line-through ml-1">{{ product.price|floatformat:2 }} €</span>
+                                    {% else %}
+                                        <span class="text-lg font-bold text-gray-900">{{ product.price|floatformat:2 }} €</span>
+                                    {% endif %}
+                                </div>
+                                {% comment %} {% if product.stock > 0 %}
+                                    <span class="text-xs px-2 py-1 rounded-full {{ product.stock < 5 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' }}">
+                                        <i class="fas {{ product.stock < 5 ? 'fa-exclamation-circle' : 'fa-check-circle' }}"></i>
+                                        {{ product.stock < 5 ? 'Plus que '|add:product.stock|stringformat:'d'|add:' en stock' : 'En stock' }}
+                                    </span>
+                                {% else %}
+                                {% endif %} {% endcomment %}
+                                <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-clock"></i> Sur commande
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% include 'products/includes/pagination.html' %}
+    {% else %}
+        <div class="text-center py-12 bg-white rounded-lg shadow">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="mt-2 text-lg font-medium text-gray-900">Aucun produit trouvé</h3>
+            <p class="mt-1 text-gray-500">Aucun produit ne correspond à vos critères de recherche.</p>
+            {% if request.GET %}
+                <div class="mt-4">
+                    <a href="{{ request.path }}" class="text-red-600 hover:text-red-800 font-medium">
+                        <i class="fas fa-undo-alt mr-1"></i> Réinitialiser les filtres
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

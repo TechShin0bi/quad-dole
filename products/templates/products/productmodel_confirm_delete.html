@@ -1,0 +1,97 @@
+<!-- templates/products/productmodel_confirm_delete.html -->
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Supprimer le modèle - Jimquad39{% endblock %}
+
+{% block admin_content %}
+<div class="container mx-auto px-4 py-6 max-w-2xl">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'admin:dashboard' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-red-600">
+                    <i class="fas fa-home mr-2"></i>
+                    Tableau de bord
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'products:model-list' %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-red-600 md:ml-2">Modèles</a>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'products:model-detail' object.slug %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-red-600 md:ml-2">{{ object.brand.name }} {{ object.name }}</a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Supprimer</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="md:flex md:items-center md:justify-between mb-6">
+        <div class="flex-1 min-w-0">
+            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                Supprimer le modèle
+            </h1>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <i class="fas fa-exclamation text-red-600"></i>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                        Supprimer {{ object.brand.name }} {{ object.name }}
+                    </h3>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500">
+                            Êtes-vous sûr de vouloir supprimer ce modèle ? Cette action est irréversible.
+                        </p>
+                        {% if object.products.count > 0 %}
+                            <div class="mt-4 p-3 bg-yellow-50 rounded-md">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-yellow-800">Attention !</h3>
+                                        <div class="mt-2 text-sm text-yellow-700">
+                                            <p>Ce modèle est associé à {{ object.products.count }} produit{{ object.products.count|pluralize }}. La suppression de ce modèle ne supprimera pas les produits associés, mais ceux-ci n'auront plus de modèle de référence.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 rounded-b-lg">
+            <form method="post" class="inline">
+                {% csrf_token %}
+                <a href="{% url 'products:model-detail' object.slug %}" 
+                   class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Annuler
+                </a>
+                <button type="submit" 
+                        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
