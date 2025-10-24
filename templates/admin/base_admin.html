@@ -17,7 +17,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     {% block extra_head %}
-    <style>
+    {% comment %} <style>
         .admin-sidebar {
             width: 250px;
             min-height: calc(100vh - 60px);
@@ -45,7 +45,7 @@
             }
             .overlay.open { display: block; }
         }
-    </style>
+    </style> {% endcomment %}
     {% endblock extra_head %}
 </head>
 <body class="bg-gray-100">
@@ -81,6 +81,9 @@
 </div>
 
 {% block extra_js %}
+{{ block.super }}
+<script src="{% static 'js/product_form.js' %}"></script>
+<script src="{% static 'js/product_detail.js' %}"></script>
 <script>
     document.addEventListener('alpine:init', () => {
         // Init Alpine components if needed

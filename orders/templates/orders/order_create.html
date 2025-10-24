@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Passer commande{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Passer commande</h1>
+    
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="space-y-4">
+                    <div>
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">Informations de livraison</h2>
+                        <div class="space-y-4">
+                            <div>
+                                {{ form.shipping_address|as_crispy_field }}
+                            </div>
+                            <div>
+                                {{ form.billing_address|as_crispy_field }}
+                            </div>
+                            <div>
+                                {{ form.phone_number|as_crispy_field }}
+                            </div>
+                            <div>
+                                {{ form.notes|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-6">
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">Récapitulatif de la commande</h2>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <!-- Cart items will be shown here -->
+                            <div class="space-y-4">
+                                {% for item in cart %}
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="text-gray-600">{{ item.quantity }}x</span>
+                                        <span class="font-medium">{{ item.product.name }}</span>
+                                    </div>
+                                    <span class="font-medium">{{ item.total_price|floatformat:2 }} €</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="border-t border-gray-200 mt-4 pt-4">
+                                <div class="flex justify-between py-2">
+                                    <span>Sous-total</span>
+                                    <span>{{ cart.get_total_price|floatformat:2 }} €</span>
+                                </div>
+                                <div class="flex justify-between py-2">
+                                    <span>Livraison</span>
+                                    <span>10.00 €</span>
+                                </div>
+                                <div class="flex justify-between py-2 font-bold text-lg border-t border-gray-200 mt-2 pt-2">
+                                    <span>Total</span>
+                                    <span>{{ cart.get_total_price|add:10|floatformat:2 }} €</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <a href="{% url 'cart:cart_detail' %}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Retour au panier
+                    </a>
+                    <button type="submit" class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Passer la commande
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

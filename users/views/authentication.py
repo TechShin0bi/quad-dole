@@ -41,9 +41,3 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
-
-
-def home(request):
-    if request.user.is_staff or request.user.is_superuser:
-        return redirect('users:user-list')
-    return render(request, 'admin/dashboard.html')

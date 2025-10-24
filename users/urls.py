@@ -10,7 +10,6 @@ from .views import (
 app_name = 'users'
 
 urlpatterns = [
-    path('', views.home, name='home'),
     
     # User Management URLs
     path('users/', UserListView.as_view(), name='user-list'),

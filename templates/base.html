@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Jimquad39{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs" defer></script>
 </head>
 <body class="bg-gray-50">
@@ -15,47 +15,54 @@
     <header class="bg-white shadow-md">
         <div class="container mx-auto flex items-center justify-between py-4 px-6">
             <!-- Left -->
-            <div class="flex items-center space-x-6">
-                <a href="{% url 'home' %}" class="flex items-center space-x-2 text-gray-700 hover:text-red-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9.75L12 3l9 6.75M4.5 10.5v9.75h15V10.5" />
-                    </svg>
+            <div class="md:flex items-center space-x-6">
+                <a href="{% url 'app_urls:home' %}" class="flex items-center space-x-2 text-gray-700 hover:text-red-600">
+                    <img src="{% static 'images/home.png' %}" class="h-10" />
                     <span>ACCUEIL</span>
                 </a>
                 <a
-                 href="{% url 'users:register' %}" class="flex items-center space-x-2 text-gray-700 hover:text-red-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A10 10 0 1117.805 5.12 10 10 0 015.12 17.804zM15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
+                href="{% url 'users:register' %}" class="flex items-center space-x-2 text-gray-700 hover:text-red-600">
+                <img src="{% static 'images/lock.png' %}" class="h-10" />
                     <span>COMPTE</span>
                 </a>
             </div>
 
             <!-- Center (Logo) -->
             <div class="flex-1 text-center">
-                <a href="{% url 'home' %}">
+                <a href="{% url 'app_urls:home' %}">
                     <img src="{% static 'images/logo.png' %}"
                     {% comment %} alt="Jimquad39" {% endcomment %}
-                     class="h-12 mx-auto">
+                     class="h-10 md:h-24 mx-auto">
                 </a>
             </div>
 
-            <!-- Right -->
-            <div class="flex items-center space-x-6">
-                <!-- Cart -->
-                <a href="{% url 'home' %}" class="relative text-gray-700 hover:text-red-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.344 2M7 13h10l4-8H5.344M7 13L5.344 5M7 13l-2 9m12-9l2 9M9 22h6" />
-                    </svg>
-                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>
-                </a>
+<!-- Right -->
+<div class="space-x-6">
+    <!-- Cart -->
+    <a href="{% url 'cart:cart_detail' %}" class="relative text-gray-700 hover:text-red-600 inline-block">
+        <div class="relative">
+            <img src="{% static 'images/cart.png' %}" alt="Cart" class="h-20 w-20">
+            <!-- Badge -->
+            {% with total_items=cart|length %}
+                {% if total_items > 0 %}
+                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        {{ total_items }}
+                    </span>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </a>
 
-                <!-- Phones -->
-                <div class="text-right text-sm">
-                    <p class="text-gray-700 font-semibold">09 83 66 58 00</p>
-                    <p class="text-gray-700 font-semibold">06 86 72 11 53</p>
-                </div>
-            </div>
+    <!-- Phones -->
+    <div class="flex items-center">
+        <img src="{% static 'images/phone.png' %}" class="h-12 mr-2" />
+        <div>
+            <p class="text-gray-700 font-semibold">09 83 66 58 00</p>
+            <p class="text-gray-700 font-semibold">06 86 72 11 53</p>
+        </div>
+    </div>
+</div>
+
         </div>
     </header>
 
@@ -63,53 +70,19 @@
     <nav class="bg-gray-900 text-white">
         <div class="container mx-auto px-6">
             <ul class="flex items-center space-x-8 relative">
-                <li>
+                <li class="flex justify-center items-center w-full">
                     <button @mouseover="open = true" @mouseleave="open = false"
                         class="py-4 px-4 font-semibold hover:text-red-500 flex items-center space-x-2"
                         x-data="{ open: false }">
-                        <span>NOS PIÈCES D'OCCASION PAR MARQUES</span>
+                        <span class="text-red-500 text-4xl">NOS PIÈCES D'OCCASION PAR MARQUES</span>
                         <!-- Mega Menu -->
                         <div x-show="open" @mouseover="open = true" @mouseleave="open = false"
-                             class="absolute top-full left-0 w-full bg-white text-gray-800 shadow-lg grid grid-cols-4 gap-6 p-6 z-50">
-
-                            <!-- Column Example -->
-                            <div>
-                                <h4 class="font-bold text-red-600 mb-2">A - D</h4>
-                                <ul class="space-y-1">
-                                    <li><a href="#" class="hover:text-red-600">ACCESS-TRITON</a></li>
-                                    <li><a href="#" class="hover:text-red-600">ADLY et AXR</a></li>
-                                    <li><a href="#" class="hover:text-red-600">AEON</a></li>
-                                    <li><a href="#" class="hover:text-red-600">ARCTIC CAT</a></li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h4 class="font-bold text-red-600 mb-2">E - H</h4>
-                                <ul class="space-y-1">
-                                    <li><a href="#" class="hover:text-red-600">E-TON</a></li>
-                                    <li><a href="#" class="hover:text-red-600">GAS-GAS</a></li>
-                                    <li><a href="#" class="hover:text-red-600">GOES</a></li>
-                                    <li><a href="#" class="hover:text-red-600">HONDA</a></li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h4 class="font-bold text-red-600 mb-2">I - P</h4>
-                                <ul class="space-y-1">
-                                    <li><a href="#" class="hover:text-red-600">KYMCO</a></li>
-                                    <li><a href="#" class="hover:text-red-600">KAWASAKI</a></li>
-                                    <li><a href="#" class="hover:text-red-600">POLARIS</a></li>
-                                    <li><a href="#" class="hover:text-red-600">SUZUKI</a></li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h4 class="font-bold text-red-600 mb-2">Q - Z</h4>
-                                <ul class="space-y-1">
-                                    <li><a href="#" class="hover:text-red-600">TGB</a></li>
-                                    <li><a href="#" class="hover:text-red-600">YAMAHA</a></li>
-                                    <li><a href="#" class="hover:text-red-600">MASAÏ</a></li>
-                                    <li><a href="#" class="hover:text-red-600">SHINERAY</a></li>
+                             class="absolute top-full left-0 w-full bg-white/65 text-gray-800 shadow-lg grid grid-cols-4 gap-6 p-6 z-50">
+                             <div class="">
+                                <ul class="space-y-1 p-6 grid grid-cols-2 sm:grid-cols-4 gap-6">
+                                    {% for brand in all_brands %}
+                                    <a href="{% url 'app_urls:brand-model-list' brand.pk %}" class="hover:text-red-600">{{ brand.name }}</a>
+                                  {% endfor %}                                  
                                 </ul>
                             </div>
                         </div>
@@ -120,7 +93,7 @@
     </nav>
 
     <!-- MAIN CONTENT -->
-    <main class="container mx-auto px-6 py-8">
+    <main>
         {% block content %}{% endblock %}
     </main>
 

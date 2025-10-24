@@ -7,7 +7,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import get_object_or_404
 
 from products.models import Brand, ProductModel, Product
-from products.forms import BrandForm
+from products.forms.brand_forms import BrandForm
 from products.mixin.mixin import BrandListMixin
 from products.views.base import StaffRequiredMixin
 

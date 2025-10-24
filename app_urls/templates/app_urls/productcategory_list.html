@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-10 px-4">
+    {% if products %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in products %}
+                <div class=" p-4 flex flex-col items-center">
+                    
+                    <!-- Product Image -->
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-contain mb-4">
+                    {% else %}
+                        <div class="w-full h-48 bg-gray-100 flex items-center justify-center mb-4">
+                            <span class="text-gray-400 text-sm">No Image</span>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Product Name -->
+                    <h2 class="text-lg font-semibold mb-2 text-center">{{ product.name }}</h2>
+                    
+                    <!-- Price -->
+                    <p class="text-xl font-bold mb-2">{{ product.price }} EUR</p>
+                    
+                    <!-- Stock Status -->
+                    <p class="text-green-600 font-medium text-sm mb-1">✔ En Stock</p>
+                    {% comment %} <p class="text-gray-500 text-xs mb-3">(1 Article(s) en stock)</p> {% endcomment %}
+                    
+                    <!-- Quantity Selector -->
+                    <div class="flex items-center mb-4">
+                        <button class="px-2 py-1 bg-gray-200 text-gray-700 rounded-l hover:bg-gray-300">-</button>
+                        <input type="number" value="1" min="1" class="w-12 text-center border-t border-b border-gray-300">
+                        <button class="px-2 py-1 bg-gray-200 text-gray-700 rounded-r hover:bg-gray-300">+</button>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2">
+                        <a href="{% url 'app_urls:product-detail' product.id %}" 
+                           class="px-4 py-2 bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700">
+                            Détails
+                        </a>
+                        <a href="{% url 'orders:order_create_single' product.id %}" 
+                           class="px-4 py-2 bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700">
+                            ACHETER
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500 italic">Aucun produit trouvé.</p>
+    {% endif %}
+</div>
+{% endblock %}

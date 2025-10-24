@@ -9,7 +9,11 @@ from django.contrib.messages.views import SuccessMessageMixin
 
 # Common imports for all views
 from products.models import Product, Brand, Category, ProductModel
-from products.forms import ProductForm, BrandForm, CategoryForm, ProductModelForm
+from products.forms.brand_forms import BrandForm
+from products.forms.product_forms import ProductForm
+from products.forms.category_forms import CategoryForm
+from products.forms.productmodel_forms import ProductModelForm
+# from products.forms import ProductForm, BrandForm, CategoryForm, ProductModelForm
 
 # Common mixins can be defined here if needed
 class StaffRequiredMixin(UserPassesTestMixin):

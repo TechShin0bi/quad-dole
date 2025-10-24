@@ -1,0 +1,136 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n static admin_urls %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .status-badge {
+        display: inline-block;
+        padding: 0.25em 0.6em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+    }
+    .status-pending { background-color: #fef3c7; color: #92400e; }
+    .status-processing { background-color: #dbeafe; color: #1e40af; }
+    .status-shipped { background-color: #d1fae5; color: #065f46; }
+    .status-delivered { background-color: #dcfce7; color: #166534; }
+    .status-cancelled { background-color: #fee2e2; color: #991b1b; }
+    .status-paid { background-color: #dcfce7; color: #166534; }
+    .status-pending-payment { background-color: #fef3c7; color: #92400e; }
+    .status-failed { background-color: #fee2e2; color: #991b1b; }
+    .status-refunded { background-color: #e0f2fe; color: #075985; }
+</style>
+{% endblock %}
+
+{% block content_title %}
+<h1>Gestion des commandes</h1>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <div class="results">
+        <div class="actions" style="margin-bottom: 15px;">
+            <span class="action-counter">{{ orders.paginator.count }} commande{{ orders.paginator.count|pluralize:"s" }}</span>
+            
+            <div class="filter-row" style="float: right;">
+                <form method="get" action="">
+                    <label for="status-filter">Filtrer par statut:</label>
+                    <select name="status" id="status-filter" onchange="this.form.submit()">
+                        <option value="">Toutes les commandes</option>
+                        {% for value, label in status_choices.items %}
+                        <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+        
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>N° Commande</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Paiement</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td>
+                        <strong>#{{ order.order_number }}</strong>
+                        {% if order.notes %}
+                        <br>
+                        <small style="color: #666;">{{ order.notes|truncatechars:30 }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.user %}
+                        <a href="{% url 'admin:auth_user_change' order.user.id %}">
+                            {{ order.user.get_full_name|default:order.user.email }}
+                        </a>
+                        {% else %}
+                        {{ order.email }}
+                        {% endif %}
+                    </td>
+                    <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <span class="status-badge status-{{ order.status }}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ order.payment_status }}">
+                            {{ order.get_payment_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ order.get_total_cost|floatformat:2 }} €</td>
+                    <td>
+                        <a href="{% url 'admin:orders_order_change' order.id %}" class="button">
+                            Modifier
+                        </a>
+                        <a href="{% url 'orders:admin_order_detail' order.id %}" class="button">
+                            Détails
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">
+                        Aucune commande trouvée.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="pagination" style="margin-top: 15px;">
+            <span class="step-links">
+                {% if orders.has_previous %}
+                    <a href="?page=1">&laquo; première</a>
+                    <a href="?page={{ orders.previous_page_number }}">précédente</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ orders.number }} sur {{ orders.paginator.num_pages }}.
+                </span>
+
+                {% if orders.has_next %}
+                    <a href="?page={{ orders.next_page_number }}">suivante</a>
+                    <a href="?page={{ orders.paginator.num_pages }}">dernière &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+{% endblock %}

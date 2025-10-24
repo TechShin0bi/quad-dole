@@ -1,42 +1,17 @@
 from django.urls import path
-from .views import (
-    # Home
-    HomeView,
-    # ProductModel views
-    ProductModelListView,
-    ProductModelDetailView,
-    ProductModelCreateView,
-    ProductModelUpdateView,
-    ProductModelDeleteView,
-    # Product views
-    ProductListView,
-    ProductDetailView,
-    ProductCreateView,
-    ProductUpdateView,
-    ProductDeleteView,
-    # Brand views
-    ClientBrandListView,
-    AdminBrandListView,
-    BrandDetailView,
-    BrandCreateView,
-    BrandUpdateView,
-    BrandDeleteView,
-    BrandModelsProductsView,
-    # Category views
-    CategoryListView,
-    CategoryDetailView,
-    CategoryCreateView,
-    CategoryUpdateView,
-    CategoryDeleteView,
-)
+from .views.productmodel_views import ProductModelListView, ProductModelDetailView, ProductModelCreateView, ProductModelUpdateView, ProductModelDeleteView
+from .views.product_views import ProductListView, ProductDetailView, ProductCreateView, ProductUpdateView, ProductDeleteView
+from .views.brand_views import ClientBrandListView, AdminBrandListView, BrandDetailView, BrandCreateView, BrandUpdateView, BrandDeleteView, BrandModelsProductsView
+from .views.category_views import CategoryListView, CategoryDetailView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView
 
 app_name = "products"
 
 urlpatterns = [
-    # Home
-    path("", HomeView.as_view(), name="home"),
-    # ProductModel URLs - Protected with LoginRequiredMixin and StaffRequiredMixin
-    path("productmodels/", ProductModelListView.as_view(), name="productmodel-list"),
+    # ProductModel URLs - Public
+    path("models/", ProductModelListView.as_view(), name="model-list"),
+    
+    # Admin ProductModel URLs
+    path("productmodels/", ProductModelListView.as_view(), name="productmodel-list"),  # Keep for admin
     path(
         "productmodel/add/",
         ProductModelCreateView.as_view(),

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative bg-gray-900">
+    <img src="{% static 'images/hero.jpg' %}" alt="Quad" class="w-full  object-cover opacity-80">
+    </section>
+
+<!-- Categories / Marques Section -->
+<section class="container bg-[#F5F0F0] my-2 w-full md:max-w-1/2 mx-auto block">
+    <div class="container mx-auto p-10">
+        <h2 class="text-5xl font-bold text-center uppercase mb-2 underline font">JIMQUAD<sub>39.</sub> </h2>
+        <h2 class="text-5xl text-gray-700 font-semibold text-center underline">Découvrez nos pièces détachées.</h2>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class=" text-white py-10">
+    <div class="container mx-auto text-center px-6">
+        <a href="" class="mt-6 inline-block bg-red-500 text-black border-2 border-black px-6 py-3  font-semibold hover:bg-gray-100">
+           Voir tous
+        </a>
+    </div>
+</section>
+
+<section
+  class="flex flex-col justify-center items-center bg-fixed bg-center bg-cover"
+  style="background-image: url('/static/images/jimquad-bg.jpg');"
+>
+  <div class="bg-[#F5F0F0] m-4 border border-gray-300 p-7 md:w-3/4 backdrop-blur-sm">
+    <div class="flex items-center flex-col bg-white/80 p-3">
+      <p class="text-center text-xl">
+        JIMQUAD39 est votre
+        <strong>expert des pièces détachées d'occasion pour QUADS</strong>
+        et <strong>SSV.</strong>
+      </p>
+      <h5 class="text-red-500 my-2 text-2xl text-center uppercase underline">
+        TOUTES LES PIÈCES DÉTACHÉES :
+      </h5>
+      <p class="text-center w-3/4 text-wrap self-center">
+        Nous vous proposons un vaste choix de pièces détachées pour tous vos quads de marques.
+        Situé à Chaussin, dans le Jura (39) non loin de Dole, Lons-le-Saunier et Besançon.
+        Les pièces sont disponibles dans notre magasin ou sur notre boutique en ligne.
+      </p>
+    </div>
+
+    <p class="bg-red-500 text-white p-4 text-center text-white bg-gradient-to-r from-black through-red-900 to-red-600 rounded-md">
+      Amortisseurs, Batterie, Boite à air, Boite à vitesse, Boite transfert, Pont, Bras oscillant, Bumper, Nerf bar, Chassis avec ou sans carte grise, Carburateur, Cardan 4x4, Moyeu, Jambe de force, Carénage , Boitier cdi, Chaîne, Clignotant, Colonne de direction, Commodo, Phare, Démarrage, Clignotant, Klaxon, Carénage (avant, arrière, latérale) , Démarreur, Etrier de frein, Faisceau électrique, Feu arrière, Gâchette de gaz, Poignée accélérateur, Guidon, Jantes, Kit carénage complet, Ligne d'échappement complète ou non, Moteur, Moyeu roulement, Régulateur de tension, Réservoir, Rotule biellette de direction, Selle, Train arrière, Triangles rotules, Phare avant arrière optique, Poignée frein embrayage et bien d'autres encore.
+    </p>
+  </div>
+</section>
+
+
+<!-- About Section -->
+<section class="bg-white py-12">
+    <div class="container mx-auto grid md:grid-cols-2 gap-10 items-center px-6">
+        <div>
+            <h3 class="text-2xl font-bold uppercase mb-4">À propos de Jimquad</h3>
+            <p class="text-gray-700 leading-relaxed">
+                Spécialiste des quads depuis plus de 15 ans, Jimquad vous propose une large sélection
+                de pièces détachées et accessoires pour toutes les grandes marques.
+                Nous assurons un service de proximité et de conseil personnalisé.
+            </p>
+            <a href="" class="mt-4 inline-block text-red-600 font-semibold hover:underline">En savoir plus →</a>
+        </div>
+        <img src="{% static 'images/photo-boutique.jpg' %}" alt="Boutique Jimquad" class="rounded-lg shadow-lg">
+    </div>
+</section>
+
+<!-- Testimonials / Services -->
+<section class="bg-gray-100 py-12">
+    <div class="container mx-auto text-center px-6">
+        <h3 class="text-2xl font-bold uppercase mb-8">Nos Services</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h4 class="font-bold mb-2">Carte grise</h4>
+                <p class="text-gray-600 text-sm">Service rapide de carte grise disponible directement en magasin.</p>
+            </div>
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h4 class="font-bold mb-2">Rachat de quads</h4>
+                <p class="text-gray-600 text-sm">Nous rachetons vos anciens quads toutes marques pour pièces ou occasion.</p>
+            </div>
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h4 class="font-bold mb-2">Retrait en boutique</h4>
+                <p class="text-gray-600 text-sm">Commandez en ligne et retirez gratuitement vos pièces dans notre magasin.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% if debug %}
+<script src="{% url 'django_browser_reload:reload' %}"></script>
+{% endif %}

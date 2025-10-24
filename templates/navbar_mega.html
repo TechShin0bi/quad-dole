@@ -1,0 +1,91 @@
+{# navbar_mega.html - Django template for a navbar with mega-menu dropdown #}
+{% comment %} {#
+    Usage:
+      - Ensure Tailwind CSS and Alpine.js are loaded in your base template.
+      - Include this template where you want the navbar: 
+      - Pass a context variable `brands_by_group` with structure:
+          {
+            "A - D": ["ACCESS-TRITON", "ADLY et AXR", "AEON", "ARCTIC CAT"],
+            "E - H": ["E-TON", "GAS-GAS", "GOES", "HONDA"],
+            ...
+          }
+  #} {% endcomment %}
+  
+  <nav class="bg-gray-900 text-white">
+    <div class="container mx-auto px-6">
+      <div class="flex items-center justify-center h-16">
+        
+        <!-- Mega menu trigger -->
+        <div class="relative" x-data="{ open: false }" @keydown.escape="open = false">
+          <button
+            @mouseenter="open = true" @mouseleave="open = false"
+            @focus="open = true" @blur="open = false"
+            aria-haspopup="true" :aria-expanded="open"
+            class="py-3 px-4 font-semibold hover:text-red-400 flex items-center space-x-3 focus:outline-none"
+          >
+            <span class="text-red-400 text-lg font-extrabold">NOS PIÈCES D'OCCASION PAR MARQUES</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.584l3.71-4.354a.75.75 0 111.14.976l-4.25 5a.75.75 0 01-1.14 0l-4.25-5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+  
+          <!-- Mega Menu -->
+          <div
+            x-show="open"
+            x-transition:enter="transition ease-out duration-150"
+            x-transition:enter-start="opacity-0 translate-y-1"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-100"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-1"
+            @mouseenter="open = true" @mouseleave="open = false"
+            class="absolute left-0 right-0 top-full mt-2 z-50 pointer-events-auto"
+          >
+            <div class="mx-auto max-w-7xl px-6">
+              <div class="rounded-lg shadow-lg overflow-hidden bg-white/60 text-white">
+                <div class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-6">
+                  {# Loop over groups provided by context #}
+                  {% for group_title, brands in brands_by_group.items %}
+                    <div class="p-3">
+                      <h4 class="font-bold text-red-300 mb-3">{{ group_title }}</h4>
+                      <ul class="space-y-2 text-sm">
+                        {% for brand in brands %}
+                          <li>
+                            <a href="{% url 'parts:brand' brand_slug=brand|slugify %}" class="block hover:text-red-300 truncate">{{ brand }}</a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  {% endfor %}
+  
+                  {# Fallback if no context passed #}
+                  {% if not brands_by_group %}
+                    <div class="col-span-4 p-3 text-gray-200">No brands available.</div>
+                  {% endif %}
+  
+                </div>
+  
+                <div class="border-t border-gray-700/60 px-6 py-4 text-sm text-gray-300 bg-gray-900/40">
+                  <div class="flex items-center justify-between">
+                    <p>Découvrez toutes nos pièces d'occasion classées par marques.</p>
+                    <a href="/parts" class="underline hover:text-red-300">Voir toutes les marques</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </nav>
+  
+  {% comment %} {# Notes:
+     - This template uses Alpine.js for small interactivity (open state). If you don't use Alpine,
+       convert the x-data/x-show attributes to your JS framework or plain JS.
+     - The mega-menu background uses `bg-gray-800/80` for a semi-transparent gray overlay and `backdrop-blur-md`
+       for a soft blurred effect when supported by the browser.
+     - The link `{% url 'parts:brand' brand_slug=brand|slugify %}` assumes you have a named URL
+       and a slugify filter available; replace or remove as needed.
+  #}
+   {% endcomment %}

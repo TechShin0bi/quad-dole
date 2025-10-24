@@ -5,7 +5,7 @@ from django.db.models import Q, Count
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ..models import ProductModel, Brand
-from ..forms import ProductModelForm
+from products.forms.productmodel_forms import ProductModelForm
 from .base import StaffRequiredMixin
 
 class ProductModelListView(LoginRequiredMixin, StaffRequiredMixin, ListView):

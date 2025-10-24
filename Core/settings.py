@@ -44,6 +44,9 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # Change in pr
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
 
+# Cart settings
+CART_SESSION_ID = 'cart'  # Key to store the cart in the user session
+CART_ITEM_MAX_QUANTITY = 20  # Maximum quantity of a single product that can be added to the cart
 
 # Application definition
 
@@ -55,11 +58,17 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "users.apps.UsersConfig",
-    'admins.apps.AdminsConfig',
+    "admins.apps.AdminsConfig",
     "products.apps.ProductsConfig",
+    "app_urls.apps.AppUrlsConfig",
+    "debug_toolbar",
     "crispy_forms",
     "crispy_tailwind",
+    "django_extensions",
+    "orders.apps.OrdersConfig",
+    "cart.apps.CartConfig",
     "django_browser_reload",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -71,10 +80,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "Core.urls"
-
 
 
 TEMPLATES = [
@@ -88,6 +97,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "app_urls.contexts.context_processors.global_brands_data",
             ],
         },
     },

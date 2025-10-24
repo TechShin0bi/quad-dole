@@ -1,6 +1,7 @@
 from django import forms
-from ..models import Product, ProductModel
-
+from ..models import Product, ProductModel , ProductImage
+from django.forms import inlineformset_factory, modelformset_factory
+        
 class ProductModelForm(forms.ModelForm):
     class Meta:
         model = ProductModel
@@ -36,19 +37,70 @@ class ProductModelForm(forms.ModelForm):
                     'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm',
                 })
 
+
+class MultiFileInput(forms.ClearableFileInput):
+    """Custom file input to support multiple file uploads."""
+    allow_multiple_selected = True
+
+
+class MultiFileInput(forms.ClearableFileInput):
+    """Custom file input to support multiple uploads."""
+    allow_multiple_selected = True
+
+
 class ProductForm(forms.ModelForm):
+    extra_images = forms.ImageField(
+        widget=MultiFileInput(attrs={
+            "class": "block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500",
+            "multiple": True
+        }),
+        required=False,
+        label="Additional Images"
+    )
+
     class Meta:
         model = Product
-        fields = ['name', 'category', 'model', 'price', 'description', 'image']
+        fields = ['name', 'category', 'model', 'image', 'description', 'price']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 3}),
+            'name': forms.TextInput(attrs={
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                'placeholder': 'Enter product name'
+            }),
+            'category': forms.Select(attrs={
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+            }),
+            'model': forms.Select(attrs={
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500  focus:border-indigo-500 sm:text-sm'
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500  focus:border-indigo-500 sm:text-sm',
+                'placeholder': '0.00'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500  focus:border-indigo-500 sm:text-sm',
+                'rows': 4,
+                'placeholder': 'Enter product description'
+            }),
+            'image': forms.ClearableFileInput(attrs={
+                'class': 'block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+            }),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Add Tailwind classes to form fields
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500'
-        
-        # Set the queryset for the model field
-        self.fields['model'].queryset = ProductModel.objects.all()
+
+
+
+
+class ProductImageForm(forms.ModelForm):
+    class Meta:
+        model = ProductImage
+        fields = ['image']
+
+
+# Inline formset for multiple product images
+ProductImageFormSet = inlineformset_factory(
+    Product,
+    ProductImage,
+    form=ProductImageForm,
+    extra=3,   # show 3 empty image fields by default
+    can_delete=True
+)

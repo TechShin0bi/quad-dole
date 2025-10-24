@@ -36,11 +36,11 @@ class ProductModel(models.Model):
         related_name='models',
         verbose_name="Marque"
     )
-    description = models.TextField(blank=True, verbose_name="Description")
+    description = models.TextField(blank=False, verbose_name="Description")
     image = models.ImageField(
         upload_to='product_models/%Y/%m/%d/',
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         verbose_name="Image du modèle"
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -84,15 +84,37 @@ class Category(models.Model):
         return reverse('products:category-detail', kwargs={'pk': self.pk})
 
 
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+    image = models.ImageField(upload_to='products/images/%Y/%m/%d/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = 'Product Image'
+        verbose_name_plural = 'Product Images'
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
+            
+            
+
 class Product(models.Model):
     """Model representing a specific product model."""
     name = models.CharField(max_length=200)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.RESTRICT, null=True, blank=True, related_name='products')
     model = models.ForeignKey(
         ProductModel,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.RESTRICT,
+        null=False,
+        blank=False,
         related_name='product_model',
         verbose_name="Modèle"
     )
@@ -114,9 +136,6 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('products:product-detail', kwargs={'pk': self.pk})

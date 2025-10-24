@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from products.models import Category, Brand
-from ..forms import CategoryForm
+from ..forms.category_forms import CategoryForm
 from .base import StaffRequiredMixin
 
 class CategoryListView(ListView):

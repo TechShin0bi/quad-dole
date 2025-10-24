@@ -9,7 +9,7 @@
     <nav class="flex mb-6" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{% url 'home' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-red-600">
+                <a href="{% url 'admins:admin-dashboard' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-red-600">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                     </svg>
@@ -39,17 +39,40 @@
         <div class="md:flex">
             <!-- Product Images -->
             <div class="md:w-1/2 p-6">
-                <div class="mb-4 bg-gray-100 rounded-lg">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-auto rounded-lg">
-                    {% else %}
-                        <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg">
-                            <svg class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                    {% endif %}
+                <!-- Main Image -->
+                <div class="mb-4 bg-gray-100 rounded-lg overflow-hidden">
+                    {% with featured_image=product.images.filter.is_featured.first|default:product.images.first %}
+                        {% if featured_image %}
+                            <img id="main-image" src="{{ featured_image.image.url }}" 
+                                 alt="{{ featured_image.alt_text|default:product.name }}" 
+                                 class="w-full h-auto rounded-lg transition-opacity duration-300">
+                        {% elif product.image %}
+                            <img id="main-image" src="{{ product.image.url }}" 
+                                 alt="{{ product.name }}" 
+                                 class="w-full h-auto rounded-lg transition-opacity duration-300">
+                        {% else %}
+                            <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg">
+                                <svg class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
                 </div>
+
+                <!-- Thumbnail Gallery -->
+                {% if product.images.exists %}
+                <div class="grid grid-cols-4 gap-2 mt-4">
+                    {% for img in product.images.all %}
+                        <button onclick="changeMainImage('{{ img.image.url }}', '{{ img.alt_text|default:product.name }}')"
+                                class="border-2 rounded-md overflow-hidden {% if forloop.first or img.is_featured %}border-red-500{% else %}border-transparent hover:border-gray-300{% endif %}">
+                            <img src="{{ img.image.url }}" 
+                                 alt="{{ img.alt_text|default:product.name }}" 
+                                 class="w-full h-20 object-cover">
+                        </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 {% if user.is_staff %}
                 <div class="flex space-x-2 mt-4">
                     <a href="{% url 'products:product-update' product.id %}" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md flex items-center">
@@ -78,8 +101,39 @@
                             <span class="ml-4 text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">En stock ({{ product.stock }})</span>
                         {% else %}
                             <span class="ml-4 text-sm text-red-600 bg-red-100 px-2 py-1 rounded-full">Sur commande</span>
-                        {% endif %}
                     </div>
+                </div>
+
+                <!-- Add to Cart Form -->
+                <div class="mb-6 border-t border-gray-200 pt-4">
+                    {% block extra_js %}
+                    {{ block.super }}
+                    <script src="{% static 'js/product_form.js' %}"></script>
+                    <script src="{% static 'js/product_detail.js' %}"></script>
+                    <script>
+                        document.addEventListener('alpine:init', () => {
+                            // Init Alpine components if needed
+                        });
+                    </script>
+                    {% endblock extra_js %}
+                    <div class="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                        <button type="button" class="px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock|default:10 }}" class="w-16 text-center border-0 focus:ring-0 focus:outline-none" id="quantity">
+                            <button type="button" class="px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                        <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition duration-150 ease-in-out flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Ajouter au panier
+                        </button>
+                    </form>
                 </div>
 
                 <div class="mb-6">

@@ -1,11 +1,14 @@
+import logging
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.db import transaction
 from django.db.models import Q
+from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from products.models import Product , Category , Brand
-from products.forms import ProductForm
+from products.models import Product , Category , Brand , ProductImage
+from products.forms.product_forms import ProductForm , ProductImageFormSet
 from .base import StaffRequiredMixin
 
 class ProductListView(ListView):
@@ -125,46 +128,76 @@ class ProductDetailView(DetailView):
         return context
 
 
-class ProductCreateView(LoginRequiredMixin, StaffRequiredMixin, CreateView):
+# Configure logger
+logger = logging.getLogger(__name__)
+
+class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
-    template_name = 'products/product_form.html'
-    
-    def form_valid(self, form):
-        form.instance.added_by = self.request.user
-        messages.success(self.request, 'Le produit a été créé avec succès !')
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        return reverse_lazy('products:product-detail', kwargs={'pk': self.object.id})
-    
+    template_name = "products/product_form.html"
+    success_url = reverse_lazy("products:product-list")  # fallback
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Ajouter un nouveau produit'
+        if self.request.POST:
+            context["formset"] = ProductImageFormSet(self.request.POST, self.request.FILES)
+        else:
+            context["formset"] = ProductImageFormSet()
+        context["title"] = "Add Product"
         return context
 
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context["formset"]
 
-class ProductUpdateView(LoginRequiredMixin, StaffRequiredMixin, UpdateView):
+        if form.is_valid() and formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+            messages.success(self.request, "Product created successfully!")
+            return redirect(self.object.get_absolute_url())
+        else:
+            return self.form_invalid(form)
+
+
+class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
-    template_name = 'products/product_form.html'
-    
+    template_name = "products/product_form.html"
+
     def form_valid(self, form):
-        messages.success(self.request, 'Le produit a été mis à jour avec succès !')
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        return reverse_lazy('products:product-detail', kwargs={'pk': self.object.pk})
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = f'Modifier {self.object.name}'
-        return context
+        self.object = form.save()
+
+        # Save multiple product images
+        extra_images = self.request.FILES.getlist("extra_images")
+        for img in extra_images:
+            ProductImage.objects.create(product=self.object, image=img)
+
+        messages.success(self.request, "Product created successfully!")
+        return redirect(self.object.get_absolute_url())
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = "products/product_form.html"
+
+    def form_valid(self, form):
+        self.object = form.save()
+
+        # Add new extra images if uploaded
+        extra_images = self.request.FILES.getlist("extra_images")
+        for img in extra_images:
+            ProductImage.objects.create(product=self.object, image=img)
+
+        messages.success(self.request, "Product updated successfully!")
+        return redirect(self.object.get_absolute_url())
+
+
 
 
 class ProductDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
     model = Product
-    template_name = 'products/product_confirm_delete.html'
     success_url = reverse_lazy('products:product-list')
     success_message = "Le produit a été supprimé avec succès."
 
