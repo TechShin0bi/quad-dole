@@ -28,7 +28,7 @@ class BrandDetailView(DetailView):
     context_object_name = 'brand'
     
     def get_queryset(self):
-        return Brand.objects.annotate(product_count=Count('products'))
+        return Brand.objects.annotate(product_count=Count('models__product_model', distinct=True))
 
 
 class BrandModelsProductsView(TemplateView):

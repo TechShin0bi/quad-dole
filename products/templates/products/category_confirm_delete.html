@@ -1,0 +1,115 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block admin_content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Main Card -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-red-600 to-red-700 px-6 py-5 sm:px-8">
+                <div class="flex items-center justify-center space-x-2">
+                    <i class="fas fa-exclamation-triangle text-white text-xl"></i>
+                    <h3 class="text-xl font-semibold text-white">Confirmation de suppression</h3>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="px-6 py-8 sm:px-8">
+                <!-- Icon and Title -->
+                <div class="text-center mb-8">
+                    <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-100 mb-4">
+                        <i class="fas fa-trash-alt text-3xl text-red-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                        Supprimer la catégorie : <span class="text-red-600">{{ object.name }}</span>
+                    </h2>
+                    <p class="text-gray-600">Cette action est irréversible. Veuillez confirmer votre choix ci-dessous.</p>
+                </div>
+                
+                <!-- Warning (if products exist) -->
+                {% if object.products.exists %}
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8 rounded-r">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">Attention !</h3>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <p>Cette catégorie contient <span class="font-semibold">{{ object.products.count }}</span> produit(s). 
+                                La suppression de cette catégorie affectera ces produits.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Action Buttons -->
+                <form method="post" class="mt-8">
+                    {% csrf_token %}
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="{% url 'products:category-list' %}" 
+                           class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                            <i class="fas fa-arrow-left mr-2"></i> Annuler & Retour à la liste
+                        </a>
+                        <button type="submit" 
+                                class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                            <i class="fas fa-trash-alt mr-2"></i> Supprimer définitivement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Affected Products (if any) -->
+        {% if object.products.exists %}
+        <div class="mt-8 text-center">
+            <button type="button" 
+                    onclick="toggleAffectedProducts()" 
+                    class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 focus:outline-none transition-colors duration-200"
+                    id="toggleProductsBtn">
+                <i class="fas fa-chevron-down mr-1.5"></i> Voir les produits concernés
+            </button>
+            
+            <div id="affectedProducts" class="mt-4 hidden">
+                <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                    <ul class="divide-y divide-gray-200">
+                        {% for product in object.products.all|slice:":10" %}
+                        <li class="px-4 py-3 sm:px-6">
+                            <div class="text-sm text-gray-700">{{ product.name }}</div>
+                        </li>
+                        {% endfor %}
+                        {% if object.products.count > 10 %}
+                        <li class="px-4 py-3 sm:px-6 bg-gray-50">
+                            <div class="text-sm text-gray-500 text-center">...et {{ object.products.count|add:"-10" }} produits supplémentaires</div>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleAffectedProducts() {
+        const productsDiv = document.getElementById('affectedProducts');
+        const toggleBtn = document.getElementById('toggleProductsBtn');
+        const icon = toggleBtn.querySelector('i');
+        
+        productsDiv.classList.toggle('hidden');
+        
+        if (productsDiv.classList.contains('hidden')) {
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+        } else {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        }
+    }
+</script>
+{% endblock %}

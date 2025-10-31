@@ -1,15 +1,15 @@
 import logging
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from products.models import Product , Category , Brand , ProductImage
 from products.forms.product_forms import ProductForm , ProductImageFormSet
 from .base import StaffRequiredMixin
+from django.http import Http404
 
 class ProductListView(ListView):
     model = Product
@@ -198,9 +198,39 @@ class ProductUpdateView(UpdateView):
 
 class ProductDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
     model = Product
+    template_name = 'products/product_confirm_delete.html'
     success_url = reverse_lazy('products:product-list')
     success_message = "Le produit a été supprimé avec succès."
+    context_object_name = 'product'
+
+    def get_object(self, queryset=None):
+        try:
+            return super().get_object(queryset)
+        except Http404:
+            messages.error(self.request, "Le produit que vous essayez de supprimer n'existe pas ou a déjà été supprimé.")
+            raise
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+        except Http404:
+            return redirect(self.success_url)
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return self.delete(request, *args, **kwargs)
+        except Http404:
+            return redirect(self.success_url)
 
     def delete(self, request, *args, **kwargs):
-        messages.success(self.request, self.success_message)
-        return super().delete(request, *args, **kwargs)
+        try:
+            self.object = self.get_object()
+            success_url = self.get_success_url()
+            self.object.delete()
+            messages.success(request, self.success_message)
+            return redirect(success_url)
+        except Exception as e:
+            messages.error(request, f"Une erreur s'est produite lors de la suppression du produit: {str(e)}")
+            return redirect(self.success_url)

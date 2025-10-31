@@ -20,11 +20,20 @@
                     <img src="{% static 'images/home.png' %}" class="h-10" />
                     <span>ACCUEIL</span>
                 </a>
-                <a
-                href="{% url 'users:register' %}" class="flex items-center space-x-2 text-gray-700 hover:text-red-600">
-                <img src="{% static 'images/lock.png' %}" class="h-10" />
-                    <span>COMPTE</span>
-                </a>
+                <div class="group relative">
+                    <a href="{% url 'users:register' %}" class="flex items-center space-x-2 text-gray-700 hover:text-red-600">
+                        <img src="{% static 'images/lock.png' %}" class="h-10" />
+                        <span>COMPTE</span>
+                    </a>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                        <form method="post" action="{% url 'users:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Se déconnecter
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
 
             <!-- Center (Logo) -->
