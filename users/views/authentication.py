@@ -2,42 +2,63 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.urls import reverse_lazy
-from django.views.generic import FormView
+from django.views.generic import FormView, CreateView, View
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import login
+from django.contrib import messages
+from django.shortcuts import redirect
 
 from ..forms.authentication import UserLoginForm, UserRegisterForm
+from ..models import User
 
 
-def user_login(request):
-    if request.method == 'POST':
-        form = UserLoginForm(request, data=request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('username')  # 'username' is actually email
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, email=email, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'Welcome back, {email}!')
-                # Redirect to admin if user is staff/admin, otherwise to home
-                if user.is_staff or user.is_superuser:
-                    return redirect('admin:index')
-                return redirect('home')
-            else:
-                messages.error(request, 'Invalid email or password.')
-        else:
-            messages.error(request, 'Invalid email or password.')
-    else:
-        form = UserLoginForm()
-    return render(request, 'users/login.html', {'form': form})
+class UserLoginView(LoginView):
+    template_name = 'users/login.html'
+    form_class = UserLoginForm
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        return reverse_lazy('app_urls:home')
+
+    def form_valid(self, form):
+        email = form.cleaned_data.get('username')  # 'username' is actually email
+        messages.success(self.request, f'Welcome back, {email}!')
+        
+        user = form.get_user()
+        if user.is_staff or user.is_superuser:
+            return redirect('admins:admin-dashboard')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid email or password.')
+        return super().form_invalid(form)
 
 
-def register(request):
-    if request.method == 'POST':
+class UserRegisterView(CreateView):
+    model = User
+    form_class = UserRegisterForm
+    template_name = 'users/register.html'
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        email = form.cleaned_data.get('email')
+        messages.success(self.request, f'Account created for {email}. You can now log in.')
+        return response
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('email')
             messages.success(request, f'Account created for {username}! You can now log in.')
             return redirect('login')
-    else:
-        form = UserRegisterForm()
-    return render(request, 'users/register.html', {'form': form})
+        else:
+            form = UserRegisterForm()
+        return render(request, 'users/register.html', {'form': form})
+    
+    
+class CustomLogoutView(LogoutView):
+    next_page = reverse_lazy('users:login')  # redirect after logout
+
+    def dispatch(self, request, *args, **kwargs):
+        messages.success(request, "Vous avez été déconnecté avec succès.")
+        return super().dispatch(request, *args, **kwargs)
