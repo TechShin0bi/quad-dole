@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Count, Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
+from products.models import Product
 
 from products.models import Category, Brand
 from ..forms.category_forms import CategoryForm
@@ -80,20 +81,26 @@ class CategoryDetailView(DetailView):
     paginate_by = 12
     
     def get_queryset(self):
-        return Category.objects.annotate(product_count=Count('products'))
+        return Category.objects.all()
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = self.get_object()
         
-        # Get subcategories with product counts
-        subcategories = Category.objects.all()
+        # Get all products in this category
+        products_in_category = Product.objects.filter(category=category)
+        
+        # Get subcategories (all categories except current one)
+        subcategories = Category.objects.exclude(id=category.id)
         
         # Get featured products (first 4 products in this category)
-        featured_products = category.products.all()[:4]
+        featured_products = products_in_category[:4]
         
         # Get all products in this category for pagination
-        all_products = category.products.all().order_by('name')
+        all_products = products_in_category.order_by('name')
+        
+        # Add product count to context
+        context['product_count'] = products_in_category.count()
         
         # Get brands that have products in this category
         brands = Brand.objects.filter(
