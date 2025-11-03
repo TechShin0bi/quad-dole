@@ -1,12 +1,12 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.contrib import messages
-from django.db.models import Count, Q
+from django.db import models
+from django.utils.text import slugify
+from django.urls import reverse, reverse_lazy
+from django.db.models import Q, Count, Exists, OuterRef
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
-from products.models import Product
-
-from products.models import Category, Brand
+from django.contrib import messages
+from products.models import Product, Category, Brand
 from ..forms.category_forms import CategoryForm
 from .base import StaffRequiredMixin
 
@@ -79,56 +79,56 @@ class CategoryDetailView(DetailView):
     template_name = 'products/category_detail.html'
     context_object_name = 'category'
     paginate_by = 12
-    
+
     def get_queryset(self):
         return Category.objects.all()
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = self.get_object()
-        
-        # Get all products in this category
-        products_in_category = Product.objects.filter(category=category)
-        
-        # Get subcategories (all categories except current one)
+
+        # --- Get all products in this category ---
+        products_in_category = Product.objects.filter(category=category).select_related('model__brand')
+
+        # --- Subcategories (for navigation or recommendations) ---
         subcategories = Category.objects.exclude(id=category.id)
-        
-        # Get featured products (first 4 products in this category)
+
+        # --- Featured products ---
         featured_products = products_in_category[:4]
-        
-        # Get all products in this category for pagination
-        all_products = products_in_category.order_by('name')
-        
-        # Add product count to context
-        context['product_count'] = products_in_category.count()
-        
-        # Get brands that have products in this category
-        brands = Brand.objects.filter(
-            products__category=category
-        ).annotate(
-            product_count=Count('products', filter=Q(products__category=category), distinct=True)
-        ).order_by('name')
-        
-        # Pagination
+
+        # --- Paginate products ---
+        paginator = Paginator(products_in_category.order_by('name'), self.paginate_by)
         page = self.request.GET.get('page', 1)
-        paginator = Paginator(all_products, self.paginate_by)
-        
         try:
             products = paginator.page(page)
         except PageNotAnInteger:
             products = paginator.page(1)
         except EmptyPage:
             products = paginator.page(paginator.num_pages)
-        
+
+        # --- Related brands (brands that have products in this category) ---
+        # brands = Brand.objects.filter(
+        #     models__products__category=category
+        # ).annotate(
+        #     product_count=Count(
+        #         'models__products',
+        #         filter=Q(models__products__category=category),
+        #         distinct=True
+        #     )
+        # ).order_by('name')
+
+        # --- Update context ---
         context.update({
             'subcategories': subcategories,
             'featured_products': featured_products,
             'products': products,
-            'brands': brands,
-            'product_count': all_products.count(),
+            # 'brands': brands,
+            'product_count': products_in_category.count(),
         })
-        
+
         return context
+
+
 
 
 class CategoryCreateView(LoginRequiredMixin, StaffRequiredMixin, CreateView):
@@ -145,14 +145,52 @@ class CategoryCreateView(LoginRequiredMixin, StaffRequiredMixin, CreateView):
 class CategoryUpdateView(LoginRequiredMixin, StaffRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
-    template_name = 'products/category_form.html'
+    template_name = 'products/update_category_form.html'
     
     def form_valid(self, form):
         messages.success(self.request, 'La catégorie a été mise à jour avec succès !')
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse_lazy('products:category-detail', kwargs={'slug': self.object.slug})
+        return reverse_lazy('products:admin-category-detail', kwargs={'pk': self.object.pk})
+
+
+class AdminCategoryDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
+    """Admin-specific view for viewing detailed category information."""
+    model = Category
+    template_name = 'admin/category_detail.html'
+    context_object_name = 'category'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.get_object()
+        
+        # Get all products in this category with additional details
+        products = category.products.select_related('model__brand')
+        
+        # Get all categories except current one for reference
+        other_categories = Category.objects.exclude(id=category.id)
+        
+        # Get related brands from products in this category through the model relationship
+        related_brands = Brand.objects.filter(
+            models.Exists(
+                Product.objects.filter(
+                    category=category,
+                    model__brand=models.OuterRef('pk')
+                )
+            )
+        ).distinct()
+        
+        # Add to context
+        context.update({
+            'products': products,
+            'products_count': products.count(),
+            'other_categories': other_categories,
+            'related_brands': related_brands,
+            'is_admin_view': True
+        })
+        
+        return context
 
 
 class CategoryDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):

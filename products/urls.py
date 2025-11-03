@@ -2,7 +2,7 @@ from django.urls import path
 from .views.productmodel_views import ProductModelListView, ProductModelDetailView, ProductModelCreateView, ProductModelUpdateView, ProductModelDeleteView
 from .views.product_views import ProductListView, ProductDetailView, ProductCreateView, ProductUpdateView, ProductDeleteView
 from .views.brand_views import ClientBrandListView, AdminBrandListView, BrandDetailView, BrandCreateView, BrandUpdateView, BrandDeleteView, BrandModelsProductsView
-from .views.category_views import CategoryListView, CategoryDetailView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView
+from .views.category_views import CategoryListView, CategoryDetailView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView, AdminCategoryDetailView
 
 app_name = "products"
 
@@ -53,6 +53,7 @@ urlpatterns = [
     path('admin/brand/<int:pk>/update/', BrandUpdateView.as_view(), name='brand-update'),
     path('admin/brand/<int:pk>/delete/', BrandDeleteView.as_view(), name='brand-delete'),
     # Category URLs
+    path("admin/categories/<int:pk>/", AdminCategoryDetailView.as_view(), name="admin-category-detail"),
     path("categories/", CategoryListView.as_view(), name="category-list"),
     path("category/<int:pk>/", CategoryDetailView.as_view(), name="category-detail"),
     path("category/add/", CategoryCreateView.as_view(), name="category-create"),

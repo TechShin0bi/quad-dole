@@ -1,0 +1,210 @@
+{% extends "admin/base_admin.html" %}
+{% load static %}
+
+{% block title %}{{ category.name }} | Admin Panel{% endblock %}
+
+{% block admin_content %}
+<div class="p-6 space-y-8">
+
+  <!-- Breadcrumb -->
+  <nav class="flex items-center text-sm text-gray-500 mb-6">
+    <a href="{% url 'admins:admin-dashboard' %}" class="hover:text-blue-600">Dashboard</a>
+    <span class="mx-2">›</span>
+    <a href="{% url 'products:category-list' %}" class="hover:text-blue-600">Categories</a>
+    <span class="mx-2">›</span>
+    <span class="font-medium text-gray-700">{{ category.name }}</span>
+  </nav>
+
+  <!-- Header -->
+  <div class="flex flex-wrap justify-between items-center gap-4">
+    <h1 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+      <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+        d="M3 7l9 6 9-6-9-6-9 6z" /></svg>
+      {{ category.name }}
+    </h1>
+
+    <div class="flex gap-2">
+      <a href="{% url 'products:category-update' category.pk %}"
+        class="px-4 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600">
+        Edit
+      </a>
+      <a href="{% url 'products:category-delete' category.pk %}"
+        onclick="return confirm('Are you sure you want to delete this category?')"
+        class="px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600">
+        Delete
+      </a>
+    </div>
+  </div>
+
+  <!-- Grid Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left Sidebar -->
+    <div class="space-y-6">
+      <!-- Category Info -->
+      <div class="bg-white rounded-xl shadow-sm p-5">
+        {% if category.image %}
+          <div class="mb-4">
+            <img src="{{ category.image.url }}" alt="{{ category.name }}" class="rounded-lg w-full object-cover h-48 shadow">
+          </div>
+        {% endif %}
+
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">{{ category.name }}</h2>
+        <p class="text-sm text-gray-600 mb-4">
+          {{ category.description|default:"No description provided." }}
+        </p>
+
+        <div class="grid grid-cols-2 text-center border-t border-gray-100 pt-4">
+          <div>
+            <p class="text-xl font-bold text-blue-600">{{ products_count }}</p>
+            <p class="text-xs uppercase text-gray-500">Products</p>
+          </div>
+          <div>
+            <p class="text-xl font-bold text-green-600">{{ subcategories.count }}</p>
+            <p class="text-xs uppercase text-gray-500">Subcategories</p>
+          </div>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-500">
+          <p><strong>Created:</strong> {{ category.created_at|date:"F j, Y" }}</p>
+          <p><strong>Updated:</strong> {{ category.updated_at|date:"F j, Y" }}</p>
+        </div>
+      </div>
+
+      <!-- Related Brands -->
+      {% if related_brands %}
+      <div class="bg-white rounded-xl shadow-sm p-5">
+        <h3 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+            d="M16 7a4 4 0 01-8 0M12 7v10m-4 0h8" /></svg>
+          Related Brands
+        </h3>
+        <div class="grid grid-cols-3 gap-3">
+          {% for brand in related_brands|slice:":6" %}
+            <div class="text-center">
+              {% if brand.logo %}
+                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}"
+                  class="mx-auto h-12 w-auto object-contain rounded">
+              {% else %}
+                <div class="h-12 flex items-center justify-center bg-gray-100 rounded text-gray-400">
+                  <i class="fas fa-tag"></i>
+                </div>
+              {% endif %}
+              <p class="mt-1 text-xs font-medium text-gray-700">{{ brand.name }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right Section -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Other Categories -->
+      {% if other_categories %}
+      <div class="bg-white rounded-xl shadow-sm p-5">
+        <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+          <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+            d="M4 6h16M4 12h16M4 18h16" /></svg>
+          Other Categories
+        </h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {% for cat in other_categories|slice:":6" %}
+          <div class="border rounded-lg p-4 hover:shadow transition">
+            <h4 class="text-sm font-semibold text-blue-600">
+              <a href="{% url 'products:admin-category-detail' cat.id %}">{{ cat.name }}</a>
+            </h4>
+            <p class="text-xs text-gray-500">{{ cat.products.count }} products</p>
+            <div class="flex gap-2 mt-2">
+              <a href="{% url 'products:admin-category-detail' cat.id %}"
+                 class="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100">View</a>
+              <a href="{% url 'products:category-update' cat.pk %}"
+                 class="text-xs px-2 py-1 bg-gray-50 text-gray-600 rounded hover:bg-gray-100">Edit</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Product Table -->
+      <div class="bg-white rounded-xl shadow-sm p-5">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-sm font-semibold text-gray-700">
+            <i class="fas fa-box text-blue-500 mr-2"></i> Products ({{ products_count }})
+          </h3>
+          <a href="{% url 'products:product-create' %}?category={{ category.id }}"
+             class="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
+            + Add Product
+          </a>
+        </div>
+
+        {% if products %}
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm border border-gray-100">
+            <thead class="bg-gray-50 text-gray-700">
+              <tr>
+                <th class="px-3 py-2 text-left font-semibold">Name</th>
+                <th class="px-3 py-2 text-left font-semibold">Brand</th>
+                <th class="px-3 py-2 text-left font-semibold">Price</th>
+                <th class="px-3 py-2 text-left font-semibold">Stock</th>
+                <th class="px-3 py-2 text-left font-semibold">Status</th>
+                <th class="px-3 py-2 text-center font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              {% for product in products|slice:":10" %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-3 py-2 text-blue-600 font-medium">
+                  <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                </td>
+                <td class="px-3 py-2 text-gray-600">
+                  {{ product.brand.name|default:"—" }}
+                </td>
+                <td class="px-3 py-2">${{ product.price }}</td>
+                <td class="px-3 py-2">{{ product.stock_quantity }}</td>
+                <td class="px-3 py-2">
+                  {% if product.is_active %}
+                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Active</span>
+                  {% else %}
+                    <span class="px-2 py-1 bg-gray-200 text-gray-600 rounded text-xs">Inactive</span>
+                  {% endif %}
+                </td>
+                <td class="px-3 py-2 text-center">
+                  <div class="flex justify-center gap-2">
+                    <a href="{{ product.get_absolute_url }}"
+                       class="text-blue-500 hover:text-blue-700"><i class="fas fa-eye"></i></a>
+                    <a href="{% url 'products:product-update' product.pk %}"
+                       class="text-yellow-500 hover:text-yellow-700"><i class="fas fa-edit"></i></a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% if products_count > 10 %}
+        <div class="text-center mt-4">
+          <a href="#" class="text-blue-500 text-sm hover:underline">View all {{ products_count }} products</a>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="py-10 text-center text-gray-500">
+          <i class="fas fa-box-open fa-2x mb-3"></i>
+          <p>No products found in this category.</p>
+          <a href="{% url 'products:product-create' %}?category={{ category.id }}"
+             class="mt-3 inline-block px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            Add your first product
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

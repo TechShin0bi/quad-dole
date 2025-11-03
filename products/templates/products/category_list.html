@@ -21,7 +21,7 @@
     {% if page_obj %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for category in page_obj %}
-                <a href="{{ category.get_absolute_url }}" class="group">
+                <a href="{% url 'products:admin-category-detail' category.id %}" class="group">
                     <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col hover:shadow-lg transition-shadow duration-300 border border-gray-100">
                         <div class="h-16 w-16 bg-red-50 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:bg-red-100 transition-colors duration-300">
                             {% if category.icon %}
