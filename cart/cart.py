@@ -1,6 +1,14 @@
+import json
 from decimal import Decimal
 from django.conf import settings
 from products.models import Product
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return str(obj)
+        return super().default(obj)
 
 
 class Cart:
@@ -21,16 +29,27 @@ class Cart:
         """
         product_id = str(product.id)
         if product_id not in self.cart:
-            self.cart[product_id] = {'quantity': 0,
-                                    'price': str(product.price)}
+            self.cart[product_id] = {
+                'quantity': 0,
+                'price': str(product.price)  # Store price as string
+            }
         if override_quantity:
-            self.cart[product_id]['quantity'] = quantity
+            self.cart[product_id]['quantity'] = int(quantity)
         else:
-            self.cart[product_id]['quantity'] += quantity
+            self.cart[product_id]['quantity'] += int(quantity)
         self.save()
 
     def save(self):
-        # mark the session as "modified" to make sure it gets saved
+        # Ensure all Decimal values are converted to strings before saving to session
+        cart_copy = {}
+        for product_id, item in self.cart.items():
+            cart_copy[product_id] = {
+                'quantity': item['quantity'],
+                'price': str(item['price']) if isinstance(item['price'], Decimal) else item['price']
+            }
+        
+        # Update session with the serializable cart
+        self.session[settings.CART_SESSION_ID] = cart_copy
         self.session.modified = True
 
     def remove(self, product):
@@ -56,25 +75,29 @@ class Cart:
             cart[str(product.id)]['product'] = product
         
         for item in cart.values():
+            # Convert price back to Decimal for calculations
             item['price'] = Decimal(item['price'])
             item['total_price'] = item['price'] * item['quantity']
             yield item
 
     def __len__(self):
         """
-        Count all items in the cart.
+        Count the number of unique products in the cart.
         """
-        return sum(item['quantity'] for item in self.cart.values())
+        return len(self.cart)
 
     def get_total_price(self):
         """
         Calculate the total cost of the items in the cart.
         """
-        return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
+        return sum(Decimal(item['price']) * int(item['quantity']) for item in self.cart.values())
 
     def clear(self):
         """
         Remove cart from session.
         """
-        del self.session[settings.CART_SESSION_ID]
-        self.save()
+        if settings.CART_SESSION_ID in self.session:
+            del self.session[settings.CART_SESSION_ID]
+            self.save()
+            return True
+        return False

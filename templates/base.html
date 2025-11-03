@@ -53,11 +53,9 @@
             <img src="{% static 'images/cart.png' %}" alt="Cart" class="h-20 w-20">
             <!-- Badge -->
             {% with total_items=cart|length %}
-                {% if total_items > 0 %}
-                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                        {{ total_items }}
-                    </span>
-                {% endif %}
+                <span class="absolute -top-1 -right-1 bg-black text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {{ total_items|default:0 }}
+                </span>
             {% endwith %}
         </div>
     </a>

@@ -12,6 +12,7 @@ from .models import Order, OrderItem, OrderStatusHistory
 from products.models import Product
 from orders.forms import OrderForm
 from cart.cart import Cart
+from decimal import Decimal
 
 
 class OrderListView(LoginRequiredMixin, ListView):
@@ -27,6 +28,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
     template_name = 'orders/order_detail.html'
     context_object_name = 'order'
+    pk_url_kwarg = 'order_number'
     
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
@@ -73,13 +75,12 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
             items.append(order_item)
             
             # Update product stock
-            product.stock -= quantity
             product.save()
         
         # Set order totals
         order.total_amount = total
-        order.tax_amount = total * 0.2  # Example: 20% tax
-        order.shipping_cost = 10.00  # Example flat rate shipping
+        order.tax_amount = total * Decimal('0.2')
+        order.shipping_cost = Decimal('10.00')
         order.save()
         
         # Save order items
@@ -93,14 +94,22 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
             created_by=order.user
         )
         
-        # Clear the cart
-        cart.clear()
+        # Clear the cart and verify it was cleared
+        cart_cleared = cart.clear()
+        if not cart_cleared:
+            # If cart wasn't cleared, log the issue
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f'Failed to clear cart for order #{order.order_number}')
+        
+        # Force session to save
+        self.request.session.modified = True
         
         messages.success(
             self.request,
             f'Votre commande #{order.order_number} a été passée avec succès!'
         )
-        return redirect('orders:order_detail', pk=order.pk)
+        return redirect('orders:order_detail', order_number=order.pk)
 
 
 class OrderSingleProductView(LoginRequiredMixin, FormView):
@@ -111,26 +120,23 @@ class OrderSingleProductView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         product = get_object_or_404(Product, id=self.kwargs['product_id'])
         
-        # Create a cart with just this product
         cart = Cart(self.request)
-        cart.clear()  # Clear any existing items
-        cart.add(product=product, quantity=1)
-        
+        cart.add(product=product, quantity=1, override_quantity=True)  # ✅ safer
         context['cart'] = cart
         context['is_single_product'] = True
         return context
+
     
     def form_valid(self, form):
         cart = Cart(self.request)
-        if not cart:
+        if len(cart) == 0:
             messages.error(self.request, "Erreur: Le produit n'a pas pu être ajouté au panier")
-            return redirect('app_urls:product-list')
-            
+            return redirect('app_urls:home')
+
         order = form.save(commit=False)
         order.user = self.request.user
         order.email = self.request.user.email
-        
-        # Calculate totals
+
         items = []
         total = 0
         for item in cart:
@@ -139,8 +145,7 @@ class OrderSingleProductView(LoginRequiredMixin, FormView):
             quantity = item['quantity']
             subtotal = price * quantity
             total += subtotal
-            
-            # Create order item
+
             order_item = OrderItem(
                 order=order,
                 product=product,
@@ -148,41 +153,31 @@ class OrderSingleProductView(LoginRequiredMixin, FormView):
                 quantity=quantity
             )
             items.append(order_item)
-            
-            # Update product stock
-            product.stock -= quantity
             product.save()
-        
-        # Set order totals
+
+
         order.total_amount = total
-        order.tax_amount = total * 0.2  # Example: 20% tax
-        order.shipping_cost = 10.00  # Example flat rate shipping
+        order.tax_amount = total * Decimal('0.2')
+        order.shipping_cost = Decimal('10.00')
         order.save()
-        
-        # Save order items
         OrderItem.objects.bulk_create(items)
-        
-        # Create initial status history
+
         OrderStatusHistory.objects.create(
             order=order,
             status='pending',
             notes='Commande créée par le client',
             created_by=order.user
         )
-        
-        # Clear the cart
+
         cart.clear()
-        
-        messages.success(
-            self.request,
-            f'Votre commande #{order.order_number} a été passée avec succès!'
-        )
-        return redirect('orders:order_detail', pk=order.pk)
+        messages.success(self.request, f'Votre commande #{order.order_number} a été passée avec succès!')
+        return redirect('orders:order_detail', order_number=order.pk)
+
 
 
 class OrderCancelView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        order = get_object_or_404(Order, pk=pk, user=request.user)
+    def post(self, request, order_number):
+        order = get_object_or_404(Order, order_number=order_number, user=request.user)
         
         if order.status not in ['cancelled', 'shipped', 'delivered']:
             order.status = 'cancelled'
@@ -206,7 +201,7 @@ class OrderCancelView(LoginRequiredMixin, View):
         else:
             messages.error(request, 'Impossible d\'annuler cette commande.')
         
-        return redirect('orders:order_detail', pk=order.pk)
+        return redirect('orders:order_detail', order_number=order.pk)
 
 
 # Admin Views
