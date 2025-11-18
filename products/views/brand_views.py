@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import Count, Prefetch
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import get_object_or_404
+from django.db.models import Count, Q
 
 from products.models import Brand, ProductModel, Product
 from products.forms.brand_forms import BrandForm
@@ -19,8 +19,30 @@ class AdminBrandListView(BrandListMixin,ListView,):
     template_name = "products/admin/brand_list.html"
 
 
-class ClientBrandListView(BrandListMixin,ListView,):
+
+class ClientBrandListView(ListView):
+    model = Brand
     template_name = "products/client/brand_list.html"
+    context_object_name = "brands"
+    paginate_by = None  # ✅ disable pagination completely
+
+    def get_queryset(self):
+        queryset = Brand.objects.annotate(
+            product_count=Count('models__product_model', distinct=True)
+        )
+
+        # Optional search
+        search_query = self.request.GET.get('q')
+        if search_query:
+            queryset = queryset.filter(Q(name__icontains=search_query))
+
+        # Optional ordering
+        order_by = self.request.GET.get('order_by', 'name')
+        if order_by in ['name', '-name', 'product_count', '-product_count']:
+            queryset = queryset.order_by(order_by)
+
+        return queryset
+
 
 class BrandDetailView(DetailView):
     model = Brand

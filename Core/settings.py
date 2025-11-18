@@ -178,7 +178,16 @@ LOGOUT_REDIRECT_URL = "home"
 LOGIN_URL = "login"
 
 # Email settings (for development)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+
+EMAIL_HOST_USER = 'your_email@gmail.com'          # your Gmail address
+EMAIL_HOST_PASSWORD = 'YOUR_APP_PASSWORD_HERE'    # your app password from step 1
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
