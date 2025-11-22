@@ -1,4 +1,8 @@
 {% load static %}
+{% if not user.is_staff %}
+    {% url 'home' as home_url %}
+    <script>window.location.href = "{{ home_url }}";</script>
+{% endif %}
 
 <!DOCTYPE html>
 <html lang="en">

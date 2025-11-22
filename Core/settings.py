@@ -184,9 +184,13 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 
-EMAIL_HOST_USER = 'your_email@gmail.com'          # your Gmail address
-EMAIL_HOST_PASSWORD = 'YOUR_APP_PASSWORD_HERE'    # your app password from step 1
+EMAIL_HOST_USER = 'Jimquads39@gmail.com'          # your Gmail address
+EMAIL_HOST_PASSWORD = 'homt dawb vdcs agnv'    # your app password from step 1
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+ADMINS = [
+    ('Jimquads Admin', 'Borelngapurth12@gmail.com'),
+]
 
 
 # Crispy Forms

@@ -1,8 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.db import models
-from django.utils.text import slugify
-from django.urls import reverse, reverse_lazy
-from django.db.models import Q, Count, Exists, OuterRef
+from django.urls import reverse_lazy
+from django.db.models import Q, Count
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages

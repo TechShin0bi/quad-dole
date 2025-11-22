@@ -4,10 +4,11 @@ from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, UpdateView as BaseUpdateView
 
 from products.models import Product , Category , Brand , ProductImage
 from products.forms.product_forms import ProductForm , ProductImageFormSet
+from products.forms import ProductImageForm
 from .base import StaffRequiredMixin
 from django.http import Http404
 
@@ -126,6 +127,72 @@ class ProductDetailView(DetailView):
             
         context['related_products'] = related_products
         return context
+
+
+class ProductImagesView(LoginRequiredMixin, UpdateView):
+    model = Product
+    template_name = 'products/manage_images.html'
+    form_class = ProductImageForm
+    context_object_name = 'product'
+    
+    def get_success_url(self):
+        # Use the product's pk instead of the image list's pk
+        return reverse_lazy('products:manage-images', kwargs={'pk': self.kwargs['pk']})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['images'] = self.object.images.all()
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        
+        if 'delete_image' in request.POST:
+            # Handle image deletion
+            image_id = request.POST.get('delete_image')
+            try:
+                image = self.object.images.get(id=image_id)
+                image.delete()
+                messages.success(request, 'Image supprimée avec succès.')
+            except ProductImage.DoesNotExist:
+                messages.error(request, "L'image spécifiée n'existe pas.")
+            return redirect(self.get_success_url())
+            
+        # Handle form submission for new images
+        if form.is_valid():
+            # The form's save method returns a list of saved images
+            saved_images = form.save(commit=False)
+            for img in saved_images:
+                img.product = self.object
+                img.save()
+            return self.form_valid(form)
+        return self.form_invalid(form)
+        
+    def form_valid(self, form):
+        # Don't try to save the form here as we're handling it in post
+        return super().form_valid(form)
+            
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+    
+    def form_valid(self, form):
+        try:
+            # The form's save method already handles creating ProductImage instances
+            form.save(commit=True)
+            messages.success(self.request, 'Image(s) ajoutée(s) avec succès.')
+        except Exception as e:
+            logger.error(f"Error saving product images: {str(e)}")
+            messages.error(self.request, 'Une erreur est survenue lors de l\'ajout des images.')
+        
+        return super().form_valid(form)
+    
+    def get_form_kwargs(self):
+        """Add the product instance to the form's kwargs."""
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.get_object()  # This sets the product instance
+        return kwargs
 
 
 # Configure logger

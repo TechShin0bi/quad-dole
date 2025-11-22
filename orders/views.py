@@ -13,7 +13,7 @@ from products.models import Product
 from orders.forms import OrderForm
 from cart.cart import Cart
 from decimal import Decimal
-
+from utils.utils import send_order_emails
 
 class OrderListView(LoginRequiredMixin, ListView):
     model = Order
@@ -52,8 +52,9 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
             return redirect('cart:cart_detail')
             
         order = form.save(commit=False)
-        order.user = self.request.user
-        order.email = self.request.user.email
+        user = self.request.user
+        order.user = user
+        order.email = user.email
         
         # Calculate totals
         items = []
@@ -105,9 +106,14 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
         # Force session to save
         self.request.session.modified = True
         
+        # ------------------ SEND EMAILS ------------------
+        send_order_emails(order)
+        
         messages.success(
             self.request,
-            f'Votre commande #{order.order_number} a été passée avec succès!'
+            f'Confirmation de commande #{order.order_number} : Votre commande a été enregistrée avec succès. '
+            f'Un email de confirmation contenant votre facture et les détails de votre commande vous sera envoyé à l\'adresse {user.email}. '
+            f'Merci pour votre confiance !'
         )
         return redirect('orders:order_detail', order_number=order.pk)
 
@@ -134,8 +140,9 @@ class OrderSingleProductView(LoginRequiredMixin, FormView):
             return redirect('app_urls:home')
 
         order = form.save(commit=False)
-        order.user = self.request.user
-        order.email = self.request.user.email
+        user = self.request.user
+        order.user = user
+        order.email = user.email
 
         items = []
         total = 0
@@ -170,7 +177,15 @@ class OrderSingleProductView(LoginRequiredMixin, FormView):
         )
 
         cart.clear()
-        messages.success(self.request, f'Votre commande #{order.order_number} a été passée avec succès!')
+        
+        # ------------------ SEND EMAILS ------------------
+        send_order_emails(order)
+        messages.success(
+            self.request,
+            f'Confirmation de commande #{order.order_number} : Votre commande a été enregistrée avec succès. '
+            f'Un email de confirmation contenant votre facture et les détails de votre commande vous sera envoyé à l\'adresse {user.email}. '
+            f'Merci pour votre confiance !'
+        )
         return redirect('orders:order_detail', order_number=order.pk)
 
 
