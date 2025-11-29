@@ -61,19 +61,40 @@ class UserRegisterForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={
             'class': 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
             'placeholder': 'Créez un mot de passe',
-            'autocomplete': 'new-password'
+            'autocomplete': 'new-password',
         }),
-        help_text='Votre mot de passe doit contenir au moins 8 caractères.'
+        help_text='Le mot de passe doit contenir au moins 8 caractères.',
+        min_length=8,
     )
+
     password2 = forms.CharField(
-        label='Confirmation du mot de passe',
+        label='Confirmation mot de passe',
         widget=forms.PasswordInput(attrs={
             'class': 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
             'placeholder': 'Confirmez votre mot de passe',
-            'autocomplete': 'new-password'
+            'autocomplete': 'new-password',
         }),
-        help_text='Entrez le même mot de passe que précédemment, pour vérification.'
+        help_text='Le mot de passe doit contenir au moins 8 caractères.',
+        min_length=8,
     )
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        if len(password1) < 8:
+            raise forms.ValidationError("Le mot de passe doit contenir au moins 8 caractères.")
+        return password1
+
+    
+    # def clean_password1(self):
+    #     password1 = self.cleaned_data.get('password1')
+    #     if len(password1) != 8:
+    #         raise forms.ValidationError("Le mot de passe doit contenir exactement 8 caractères.")
+    #     if not any(char.isupper() for char in password1):
+    #         raise forms.ValidationError("Le mot de passe doit contenir au moins une lettre majuscule.")
+    #     if not any(char.islower() for char in password1):
+    #         raise forms.ValidationError("Le mot de passe doit contenir au moins une lettre minuscule.")
+    #     if not any(char.isdigit() for char in password1):
+    #         raise forms.ValidationError("Le mot de passe doit contenir au moins un chiffre.")
+    #     return password1
 
     class Meta:
         model = User

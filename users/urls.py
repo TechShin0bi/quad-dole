@@ -1,12 +1,10 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
 from .views import (UserRegisterView, UserLoginView, CustomLogoutView, CustomPasswordResetView, CustomPasswordResetDoneView, CustomPasswordResetConfirmView, CustomPasswordResetCompleteView, CustomPasswordChangeView, CustomPasswordChangeDoneView)
 from .forms import CustomPasswordResetForm
 from .views import (
     UserListView, UserCreateView, 
     UserUpdateView, UserDeleteView
 )
-
 app_name = 'users'
 
 urlpatterns = [

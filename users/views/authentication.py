@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.urls import reverse_lazy
-from django.views.generic import FormView, CreateView, View
+from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login
 from django.contrib import messages
@@ -38,22 +38,13 @@ class UserRegisterView(CreateView):
     model = User
     form_class = UserRegisterForm
     template_name = 'users/register.html'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('users:login')
 
     def form_valid(self, form):
         response = super().form_valid(form)
         email = form.cleaned_data.get('email')
         messages.success(self.request, f'Account created for {email}. You can now log in.')
         return response
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('email')
-            messages.success(request, f'Account created for {username}! You can now log in.')
-            return redirect('login')
-        else:
-            form = UserRegisterForm()
-        return render(request, 'users/register.html', {'form': form})
     
     
 class CustomLogoutView(LogoutView):

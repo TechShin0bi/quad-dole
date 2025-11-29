@@ -1,111 +1,127 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
-
-{% block title %}Inscription - Magasin de Pièces ATV{% endblock %}
+{% block title %}Inscription{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-    <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-gray-800">Créer votre compte</h2>
-        <p class="text-gray-600 mt-2">Vous avez déjà un compte? <a href="{% url 'users:login' %}" class="text-blue-600 hover:text-blue-800">Se connecter</a></p>
-    </div>
+<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
     
+    <!-- Header -->
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Créer votre compte</h2>
+        <p class="text-gray-600 text-sm mt-1">
+            Déjà un compte ? 
+            <a href="{% url 'users:login' %}" class="text-blue-600 hover:underline">Se connecter</a>
+        </p>
+    </div>
+
+    <!-- Global Errors -->
     {% if form.non_field_errors %}
-    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500">
+    <div class="mb-4 p-3 bg-red-50 border border-red-300 rounded-md">
         {% for error in form.non_field_errors %}
             <p class="text-sm text-red-700">{{ error }}</p>
         {% endfor %}
     </div>
     {% endif %}
-    
-    <form method="post" class="space-y-6" novalidate>
+
+    <form method="post" class="space-y-5" novalidate>
         {% csrf_token %}
-        
-        <!-- Email (full width) -->
-        <div class="space-y-1">
-            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.email.label }}</label>
-            <input type="email" 
-                   name="{{ form.email.name }}" 
-                   id="{{ form.email.id_for_label }}" 
-                   value="{{ form.email.value|default:'' }}"
-                   class="appearance-none block w-full px-3 py-2 border {% if form.email.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   placeholder="Entrez votre email">
-            {% if form.email.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
-            {% endif %}
-            <p class="mt-1 text-xs text-gray-500">{{ form.email.help_text }}</p>
-        </div>
-        
-        <!-- First Name and Last Name (2 columns) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-1">
-                <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.first_name.label }}</label>
-                <input type="text" 
-                       name="{{ form.first_name.name }}" 
-                       id="{{ form.first_name.id_for_label }}" 
-                       value="{{ form.first_name.value|default:'' }}"
-                       class="appearance-none block w-full px-3 py-2 border {% if form.first_name.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                       placeholder="Votre prénom">
-                {% if form.first_name.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.first_name.errors.0 }}</p>
-                {% endif %}
-            </div>
-            <div class="space-y-1">
-                <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.last_name.label }}</label>
-                <input type="text" 
-                       name="{{ form.last_name.name }}" 
-                       id="{{ form.last_name.id_for_label }}" 
-                       value="{{ form.last_name.value|default:'' }}"
-                       class="appearance-none block w-full px-3 py-2 border {% if form.last_name.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                       placeholder="Votre nom">
-                {% if form.last_name.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.last_name.errors.0 }}</p>
-                {% endif %}
-            </div>
-        </div>
-        
-        <!-- Passwords (2 columns) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-1">
-                <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.password1.label }}</label>
-                <input type="password" 
-                       name="{{ form.password1.name }}" 
-                       id="{{ form.password1.id_for_label }}"
-                       class="appearance-none block w-full px-3 py-2 border {% if form.password1.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                       placeholder="Créez un mot de passe">
-                {% if form.password1.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
-                {% endif %}
-                <p class="mt-1 text-xs text-gray-500">{{ form.password1.help_text }}</p>
-            </div>
-            <div class="space-y-1">
-                <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.password2.label }}</label>
-                <input type="password" 
-                       name="{{ form.password2.name }}" 
-                       id="{{ form.password2.id_for_label }}"
-                       class="appearance-none block w-full px-3 py-2 border {% if form.password2.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                       placeholder="Confirmez votre mot de passe">
-                {% if form.password2.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.password2.errors.0 }}</p>
-                {% endif %}
-                <p class="mt-1 text-xs text-gray-500">{{ form.password2.help_text }}</p>
-            </div>
-        </div>
-        
-        <div class="flex items-start">
-            <div class="flex items-center h-5">
-                <input id="terms" name="terms" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" required>
-            </div>
-            <div class="ml-3 text-sm">
-                <label for="terms" class="font-medium text-gray-700">Je suis d'accord avec les <a href="#" class="text-blue-600 hover:text-blue-500">Conditions d'utilisation</a> et <a href="#" class="text-blue-600 hover:text-blue-500">Politique de confidentialité</a></label>
-            </div>
-        </div>
-        
+
+        <!-- Email -->
         <div>
-            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Créer un compte
-            </button>
+            <label class="block text-sm font-medium text-gray-700">{{ form.email.label }}</label>
+            <input 
+                type="email"
+                name="{{ form.email.name }}"
+                value="{{ form.email.value|default:'' }}"
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 
+                {% if form.email.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                placeholder="Entrez votre email"
+            >
+            {% if form.email.errors %}
+                <p class="text-sm text-red-600 mt-1">{{ form.email.errors.0 }}</p>
+            {% endif %}
         </div>
+
+        <!-- First + Last Name -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">{{ form.first_name.label }}</label>
+                <input 
+                    type="text"
+                    name="{{ form.first_name.name }}"
+                    value="{{ form.first_name.value|default:'' }}"
+                    class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 
+                    {% if form.first_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                    placeholder="Prénom"
+                >
+                {% if form.first_name.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ form.first_name.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">{{ form.last_name.label }}</label>
+                <input 
+                    type="text"
+                name="{{ form.last_name.name }}"
+                value="{{ form.last_name.value|default:'' }}"
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 
+                {% if form.last_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                placeholder="Nom"
+                >
+                {% if form.last_name.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ form.last_name.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Passwords -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">{{ form.password1.label }}</label>
+                <input 
+                    type="password"
+                    name="{{ form.password1.name }}"
+                    class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500
+                    {% if form.password1.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                    placeholder="Mot de passe"
+                >
+                {% if form.password1.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ form.password1.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">{{ form.password2.label }}</label>
+                <input 
+                    type="password"
+                    name="{{ form.password2.name }}"
+                    class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500
+                    {% if form.password2.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                    placeholder="Confirmer"
+                >
+                {% if form.password2.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ form.password2.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="flex items-start">
+            <input type="checkbox" id="terms" name="terms" required 
+                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <label for="terms" class="ml-2 text-sm text-gray-700">
+                J'accepte les 
+                <a href="#" class="text-blue-600 hover:underline">Conditions d'utilisation</a> et la 
+                <a href="#" class="text-blue-600 hover:underline">Politique de confidentialité</a>.
+            </label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+            class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-sm 
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Créer un compte
+        </button>
     </form>
 </div>
 {% endblock %}
