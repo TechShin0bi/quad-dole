@@ -14,26 +14,23 @@
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">Découvrez notre sélection de modèles de quads disponibles</p>
         {% endif %}
     </div>
-    
-    
-    
+
     <!-- Model Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         
-        <!-- Model Cards -->
         {% for model in models %}
-        <div >
-                <a href="{% url 'app_urls:model-category-list' model.id %}"
-                   class="block">
+        <div>
+            <a href="{% url 'app_urls:model-category-list' model.id %}" class="block">
                 <!-- Image Container -->
                 <div class="relative h-48 bg-gray-100 overflow-hidden">
                     <img src="{{ model.image.url }}"
-                    alt="{{ model.name }}" 
-                    class="w-full h-full object-fill transition-transform duration-300 hover:scale-95">
+                        alt="{{ model.name }}" 
+                        class="w-full h-full object-fill transition-transform duration-300 hover:scale-95">
                 </div>
                 <h1 class="text-black text-lg text-center mt-4">{{ model.name }}</h1>
             </a>
         </div>
         {% endfor %}
+    </div>
 </div>
 {% endblock %}

@@ -15,16 +15,17 @@
 
     <!-- Brands Grid -->
     {% if brands %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
             {% for brand in brands %}
                 <a href="{% url 'app_urls:brand-model-list' brand.pk %}" class="group block">
-                    <div class="flex flex-col items-center p-4">
+                    <div class="flex flex-col items-center p-6 bg-white rounded-lg shadow hover:shadow-md transition">
+                        
                         <!-- Brand Image -->
-                        <div class="w-64 h-64 flex items-center justify-center mb-2">
+                        <div class="w-48 h-48 flex items-center justify-center mb-4">
                             {% if brand.image %}
                                 <img src="{{ brand.image.url }}"
                                      alt="{{ brand.name }}"
-                                     class="h-64 w-64 object-contain"
+                                     class="h-full w-full object-contain"
                                      loading="lazy">
                             {% else %}
                                 <div class="w-full h-full flex items-center justify-center bg-gray-50">
@@ -32,8 +33,9 @@
                                 </div>
                             {% endif %}
                         </div>
+
                         <!-- Brand Name -->
-                        <h3 class="text-center font-medium text-gray-900 group-hover:text-red-700">
+                        <h3 class="text-center font-medium text-gray-900 group-hover:text-red-700 text-lg">
                             {{ brand.name }}
                         </h3>
                     </div>
