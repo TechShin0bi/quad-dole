@@ -2,54 +2,68 @@
 {% load static %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto py-10 px-4">
+<div class="max-w-7xl mx-auto py-10 px-4 
+            text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">
+
     {% if products %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Always 4 columns on all screens -->
+        <div class="grid grid-cols-4 gap-6">
+
             {% for product in products %}
-                <div class=" p-4 flex flex-col items-center">
-                    
+                <div class="p-4 bg-white rounded shadow flex flex-col items-center">
+
                     <!-- Product Image -->
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-contain mb-4">
+                        <img src="{{ product.image.url }}" 
+                             alt="{{ product.name }}" 
+                             class="w-full h-40 object-contain mb-4">
                     {% else %}
-                        <div class="w-full h-48 bg-gray-100 flex items-center justify-center mb-4">
-                            <span class="text-gray-400 text-sm">No Image</span>
+                        <div class="w-full h-40 bg-gray-100 flex items-center justify-center mb-4">
+                            <span class="text-gray-400">No Image</span>
                         </div>
                     {% endif %}
-                    
+
                     <!-- Product Name -->
-                    <h2 class="text-lg font-semibold mb-2 text-center">{{ product.name }}</h2>
-                    
+                    <h2 class="font-semibold text-center mb-2">{{ product.name }}</h2>
+
                     <!-- Price -->
-                    <p class="text-xl font-bold mb-2">{{ product.price }} EUR</p>
-                    
-                    <!-- Stock Status -->
-                    <p class="text-green-600 font-medium text-sm mb-1">✔ En Stock</p>
-                    {% comment %} <p class="text-gray-500 text-xs mb-3">(1 Article(s) en stock)</p> {% endcomment %}
-                    
+                    <p class="font-bold mb-2">{{ product.price }} EUR</p>
+
+                    <!-- Stock -->
+                    <p class="text-green-600 font-medium mb-4">✔ En Stock</p>
+
                     <!-- Quantity Selector -->
                     <div class="flex items-center mb-4">
                         <button class="px-2 py-1 bg-gray-200 text-gray-700 rounded-l hover:bg-gray-300">-</button>
-                        <input type="number" value="1" min="1" class="w-12 text-center border-t border-b border-gray-300">
+                        <input type="number" value="1" min="1" 
+                               class="w-12 text-center border-t border-b border-gray-300">
                         <button class="px-2 py-1 bg-gray-200 text-gray-700 rounded-r hover:bg-gray-300">+</button>
                     </div>
-                    
+
                     <!-- Action Buttons -->
-                    <div class="flex gap-2">
+                    <div class="flex flex-col md:flex-row gap-2 w-full mt-auto">
+
+                        <!-- Details button -->
                         <a href="{% url 'app_urls:product-detail' product.id %}" 
-                           class="px-4 py-2 bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700">
+                           class="w-full text-center px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-700">
                             Détails
                         </a>
+
+                        <!-- Buy button -->
                         <a href="{% url 'orders:order_create_single' product.id %}" 
-                           class="px-4 py-2 bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700">
-                            ACHETER
+                           class="w-full text-center px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                            Acheter
                         </a>
                     </div>
+
                 </div>
             {% endfor %}
+
         </div>
+
     {% else %}
         <p class="text-gray-500 italic">Aucun produit trouvé.</p>
     {% endif %}
+
 </div>
 {% endblock %}
