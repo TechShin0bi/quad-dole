@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db.models import Q, Count
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from ..models import ProductModel, Brand
+from ..models import ProductModel, Brand, Product
 from products.forms.productmodel_forms import ProductModelForm
 from .base import StaffRequiredMixin
 
@@ -86,15 +86,30 @@ class ProductModelListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
         return context
 
 
-class ProductModelDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
+class ProductModelDetailView(DetailView):
     model = ProductModel
     template_name = 'products/productmodel_detail.html'
     context_object_name = 'model'
+    pk_url_kwarg = 'pk'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['products'] = self.object.product_model.all()
+        product_model = self.object
+        
+        # Get all categories that include this product model
+        categories = product_model.product_model.all()  # Using the related_name from Category.models
+        
+        # Get products from these categories
+        products = Product.objects.filter(
+            category__in=categories
+        ).select_related('category').distinct()
+        
+        context['products'] = products
         return context
+
+
+
+
 
 
 class ProductModelCreateView(LoginRequiredMixin, StaffRequiredMixin, CreateView):

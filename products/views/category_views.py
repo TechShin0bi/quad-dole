@@ -5,7 +5,7 @@ from django.db.models import Q, Count
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from products.models import Product, Category, Brand
+from products.models import Product, Category, Brand , ProductModel
 from ..forms.category_forms import CategoryForm
 from .base import StaffRequiredMixin
 
@@ -165,19 +165,14 @@ class AdminCategoryDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView
         category = self.get_object()
         
         # Get all products in this category with additional details
-        products = category.products.select_related('model__brand')
+        products = category.products.all()
         
         # Get all categories except current one for reference
         other_categories = Category.objects.exclude(id=category.id)
         
-        # Get related brands from products in this category through the model relationship
+        # Get related brands through the many-to-many relationship with ProductModel
         related_brands = Brand.objects.filter(
-            models.Exists(
-                Product.objects.filter(
-                    category=category,
-                    model__brand=models.OuterRef('pk')
-                )
-            )
+            models__in=category.models.all()
         ).distinct()
         
         # Add to context

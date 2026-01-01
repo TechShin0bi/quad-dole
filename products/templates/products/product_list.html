@@ -25,7 +25,7 @@
                     <a href="{{ product.get_absolute_url }}" class="block">
                         <div class="h-48 bg-gray-100 overflow-hidden relative">
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                                <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-full object-cover">
                             {% else %}
                                 <div class="w-full h-full flex items-center justify-center bg-gray-100">
                                     <i class="fas fa-box-open text-gray-300 text-6xl"></i>

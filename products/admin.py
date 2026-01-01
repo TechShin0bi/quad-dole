@@ -40,7 +40,7 @@ class BrandAdmin(admin.ModelAdmin):
 
     def display_image(self, obj):
         if obj.image:
-            return format_html('<img src="{}" style="width: 50px; height: auto;" />', obj.image.url)
+            return format_html('<img src="{}" style="width: 50px; height: auto;" />', obj.image)
         return "No Image"
     display_image.short_description = 'Logo'
 
@@ -67,11 +67,11 @@ class CategoryAdmin(admin.ModelAdmin):
 # Register your models here.
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'get_brand', 'category', 'display_image', 'price', 'status_badge', 'created_at')
-    list_filter = ('created_at', 'updated_at', 'model__brand', 'category')
+    list_display = ('name', 'category', 'display_image', 'price', 'status_badge', 'created_at')
+    list_filter = ('created_at', 'updated_at', 'category')
     list_editable = ('price',)
-    search_fields = ('name', 'model__brand__name', 'category__name')
-    autocomplete_fields = ('model', 'category')
+    search_fields = ('name', 'category__name', 'sku')
+    autocomplete_fields = ('category',)
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
     list_per_page = 20
@@ -79,14 +79,9 @@ class ProductAdmin(admin.ModelAdmin):
     change_form_template = 'admin/products/product/change_form.html'
     change_list_template = 'admin/products/product/change_list.html'
     
-    def get_brand(self, obj):
-        return obj.model.brand if obj.model else None
-    get_brand.short_description = 'Marque'
-    get_brand.admin_order_field = 'model__brand__name'
-    
     fieldsets = (
         (None, {
-            'fields': ('name', 'category', 'model', 'price', 'description', 'is_active')
+            'fields': ('name', 'category', 'price', 'description', 'sku', 'is_active')
         }),
         ('Images', {
             'fields': ('image',),
@@ -102,13 +97,13 @@ class ProductAdmin(admin.ModelAdmin):
     
     def image_preview(self, obj):
         if obj.image:
-            return format_html('<img src="{}" style="max-width: 200px; height: auto;" />', obj.image.url)
+            return format_html('<img src="{}" style="max-width: 200px; height: auto;" />', obj.image)
         return "No Image"
     image_preview.short_description = 'Preview'
     
     def display_image(self, obj):
         if obj.image:
-            return format_html('<img src="{}" style="width: 50px; height: auto;" />', obj.image.url)
+            return format_html('<img src="{}" style="width: 50px; height: auto;" />', obj.image)
         return "No Image"
     display_image.short_description = 'Image'
     
@@ -117,7 +112,7 @@ class ProductAdmin(admin.ModelAdmin):
     status_badge.short_description = 'Status'
     
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('model__brand', 'category')
+        return super().get_queryset(request).select_related('category')
 
 
 # Register your models here.

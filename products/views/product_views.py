@@ -19,7 +19,7 @@ class ProductListView(ListView):
     paginate_by = 12
     
     def get_queryset(self):
-        queryset = Product.objects.select_related('model__brand', 'category')
+        queryset = Product.objects.select_related('category')
         
         # Search functionality
         search_query = self.request.GET.get('q')
@@ -27,7 +27,6 @@ class ProductListView(ListView):
             queryset = queryset.filter(
                 Q(name__icontains=search_query) |
                 Q(description__icontains=search_query) |
-                Q(model__brand__name__icontains=search_query) |
                 Q(sku__icontains=search_query)
             )
         
@@ -113,7 +112,7 @@ class ProductDetailView(DetailView):
     context_object_name = 'product'
     
     def get_queryset(self):
-        return Product.objects.select_related('model', 'category')
+        return Product.objects.select_related('category')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

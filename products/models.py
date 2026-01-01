@@ -6,7 +6,8 @@ from django.core.validators import MinValueValidator
 class Brand(models.Model):
     """Model representing a brand of ATV/UTV."""
     name = models.CharField(max_length=100, unique=True)
-    image = models.ImageField(upload_to='brands/', blank=True, null=True)
+    brand_id = models.CharField(max_length=100, unique=True)
+    image = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -36,13 +37,9 @@ class ProductModel(models.Model):
         related_name='models',
         verbose_name="Marque"
     )
+    model_id = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=False, verbose_name="Description")
-    image = models.ImageField(
-        upload_to='product_models/%Y/%m/%d/',
-        blank=False,
-        null=False,
-        verbose_name="Image du modèle"
-    )
+    image = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -64,10 +61,16 @@ class ProductModel(models.Model):
 
 class Category(models.Model):
     """Model representing a product category."""
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
+    category_id = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    models = models.ManyToManyField(
+        ProductModel,
+        related_name='product_model',
+        verbose_name="Modèle"
+    )
 
     class Meta:
         ordering = ['name']
@@ -92,7 +95,7 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE,
         related_name='images'
     )
-    image = models.ImageField(upload_to='products/images/%Y/%m/%d/')
+    image = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -110,16 +113,10 @@ class Product(models.Model):
     """Model representing a specific product model."""
     name = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.RESTRICT, null=True, blank=True, related_name='products')
-    model = models.ForeignKey(
-        ProductModel,
-        on_delete=models.RESTRICT,
-        null=False,
-        blank=False,
-        related_name='product_model',
-        verbose_name="Modèle"
-    )
-    image = models.ImageField(upload_to='products/%Y/%m/%d/', blank=True, null=True)
+    image = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(blank=True)
+    sku = models.CharField(max_length=200, blank=True, null=True)
+    
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

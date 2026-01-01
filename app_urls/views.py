@@ -66,24 +66,22 @@ class ProductModelListView(ListView):
 
 class ProductModelCategoriesView(DetailView):
     """
-    Shows all categories that have at least one product for a given ProductModel.
+    Shows all categories for a given ProductModel.
     """
     model = ProductModel
     pk_url_kwarg = 'model_id' 
     context_object_name = 'product_model'
-    template_name = 'app_urls/productmodel_categories.html'  # your template
+    template_name = 'app_urls/productmodel_categories.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product_model = self.object  # the ProductModel instance
 
-        # Get all categories linked to at least one Product of this model
-        categories = Category.objects.filter(
-            products__model=product_model
-        ).distinct()
+        # Get all categories linked to this model through the many-to-many relationship
+        categories = product_model.product_model.all()  # Uses the related_name from the ManyToManyField
 
         context['categories'] = categories
-        context['page_title'] = f"Categories for {product_model.name}"
+        context['page_title'] = f"Categories for {product_model.brand.name} {product_model.name}"
 
         return context
     
@@ -122,15 +120,19 @@ class ProductDetailView(DetailView):
             category=product.category
         ).exclude(id=product.id).order_by('?')[:4]  # Get 4 random related products
         
-        # Get product specifications (you can customize this based on your needs)
+        # Get product specifications
         specifications = {
-            'Marque': product.model.brand.name,
-            'Modèle': product.model.name,
             'Catégorie': product.category.name if product.category else 'Non spécifiée',
-            'Prix': f"{product.price:.2f} €",
+            'Prix': f"{product.price:.2f} €" if product.price else 'Prix sur demande',
             'Référence': f"REF-{product.id}",
             "Date d'ajout": product.created_at.strftime('%d/%m/%Y')
         }
+        
+        # Add brand and model if available through category
+        if product.category and product.category.models.exists():
+            model = product.category.models.first()
+            specifications['Marque'] = model.brand.name
+            specifications['Modèle'] = model.name
         
         # Add to context
         context.update({

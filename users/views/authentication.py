@@ -18,20 +18,45 @@ class UserLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
+        # Get the 'next' parameter from the URL if it exists
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        # Default redirect for staff/superusers
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return reverse_lazy('admins:admin-dashboard')
         return reverse_lazy('app_urls:home')
 
     def form_valid(self, form):
-        email = form.cleaned_data.get('username')  # 'username' is actually email
-        messages.success(self.request, f'Welcome back, {email}!')
-        
-        user = form.get_user()
-        if user.is_staff or user.is_superuser:
-            return redirect('admins:admin-dashboard')
-        return super().form_valid(form)
+        try:
+            email = form.cleaned_data.get('username')
+            user = form.get_user()
+            
+            if not user.is_active:
+                messages.error(self.request, 'Your account is inactive. Please contact support.')
+                return self.form_invalid(form)
+                
+            messages.success(self.request, f'Welcome back, {email}!')
+            
+            # Let the parent class handle the redirect
+            return super().form_valid(form)
+            
+        except Exception as e:
+            print(f"Login error: {str(e)}")
+            messages.error(self.request, 'An error occurred during login. Please try again.')
+            return self.form_invalid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Invalid email or password.')
+        error_messages = []
+        for field, errors in form.errors.items():
+            for error in errors:
+                error_messages.append(f"{form.fields[field].label if field in form.fields else field}: {error}")
+        
+        for msg in error_messages:
+            messages.error(self.request, msg)
+            
         return super().form_invalid(form)
+
 
 
 class UserRegisterView(CreateView):

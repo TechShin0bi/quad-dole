@@ -10,24 +10,25 @@ class UserLoginForm(AuthenticationForm):
     username = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter your email',
-            'autofocus': True
+            'class': 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
+            'placeholder': 'votre@email.com'
         })
     )
     password = forms.CharField(
-        label='Password',
+        label='Mot de passe',
         strip=False,
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter your password',
-            'autocomplete': 'current-password',
+            'class': 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
+            'autocomplete': 'current-password'
+        }),
+    )
+    remember_me = forms.BooleanField(
+        required=False,
+        label='Se souvenir de moi',
+        widget=forms.CheckboxInput(attrs={
+            'class': 'h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
         })
     )
-    error_messages = {
-        'invalid_login': 'Please enter a correct email and password.',
-        'inactive': 'This account is inactive.',
-    }
 
 
 class UserRegisterForm(UserCreationForm):

@@ -39,7 +39,7 @@
         <div class="md:flex">
             <div class="md:w-1/3 bg-gray-50 p-6 flex items-center justify-center">
                 {% if brand.image %}
-                    <img src="{{ brand.image.url }}" alt="{{ brand.name }}" class="max-h-48 w-auto">
+                    <img src="{{ brand.image }}" alt="{{ brand.name }}" class="max-h-48 w-auto">
                 {% else %}
                     <div class="h-48 w-full flex items-center justify-center bg-gray-100 rounded">
                         <span class="text-gray-400">Aucun logo</span>
@@ -68,7 +68,9 @@
                     </div>
                     {% endif %}
                 </div>
-                <p class="text-gray-600 mb-4">{{ brand.products.count }} produit{{ brand.products.count|pluralize }} disponible{{ brand.products.count|pluralize:",s" }}</p>
+                <p class="text-gray-600 mb-4">
+                    {% comment %} {{ brand.products.count }} 
+                    produit{{ brand.products.count|pluralize }} disponible{{ brand.products.count|pluralize:",s" }}</p> {% endcomment %}
                 
                 {% if brand.description %}
                     <div class="prose max-w-none text-gray-700">
@@ -92,7 +94,7 @@
                         <a href="{{ product.get_absolute_url }}" class="block">
                             <div class="h-48 bg-gray-100 overflow-hidden">
                                 {% if product.image %}
-                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-full object-cover">
                                 {% else %}
                                     <div class="w-full h-full flex items-center justify-center bg-gray-100">
                                         <svg class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

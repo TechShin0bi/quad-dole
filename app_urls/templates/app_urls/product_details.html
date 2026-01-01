@@ -9,24 +9,24 @@
                 <!-- Thumbnails -->
                 <div class="flex md:flex-col gap-3 overflow-x-auto py-2">
                     {% if main_image %}
-                        <img src="{{ main_image.url }}" 
+                        <img src="{{ main_image }}" 
                              alt="{{ product.name }}" 
                              class="w-16 h-16 md:w-20 md:h-20 object-cover cursor-pointer border-2 border-blue-500 rounded-md"
-                             onclick="changeImage(this, '{{ main_image.url }}')">
+                             onclick="changeImage(this, '{{ main_image }}')">
                     {% endif %}
                     
                     {% for image in additional_images %}
-                        <img src="{{ image.image.url }}" 
+                        <img src="{{ image.image }}" 
                              alt="{{ product.name }}" 
                              class="w-16 h-16 md:w-20 md:h-20 object-cover cursor-pointer border-2 border-transparent hover:border-gray-300 rounded-md"
-                             onclick="changeImage(this, '{{ image.image.url }}')">
+                             onclick="changeImage(this, '{{ image.image }}')">
                     {% endfor %}
                 </div>
 
                 <!-- Main image -->
                 <div class="flex-1">
                     <img id="mainImage" 
-                         src="{% if main_image %}{{ main_image.url }}{% else %}https://via.placeholder.com/600x600?text=No+Image{% endif %}" 
+                         src="{% if main_image %}{{ main_image }}{% else %}https://via.placeholder.com/600x600?text=No+Image{% endif %}" 
                          alt="{{ product.name }}" 
                          class="w-full max-w-lg rounded-lg shadow-md">
                 </div>
@@ -93,7 +93,7 @@
                                    class="w-16 text-center border-0 focus:ring-0 bg-gray-100" disabled>
                             <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-md">+</button>
                         </div>
-                        <a href="{% url 'login' %}?next={{ request.path }}" 
+                        <a href="{% url 'users:login' %}?next={{ request.path }}" 
                            class="flex-1 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors text-center">
                             Se connecter pour commander
                         </a>
@@ -167,7 +167,7 @@
                 <a href="{% url 'app_urls:product-detail' product_id=related.id %}" class="block">
                     <div class="h-48 bg-gray-200 flex items-center justify-center">
                         {% if related.image %}
-                            <img src="{{ related.image.url }}" alt="{{ related.name }}" class="h-full w-full object-cover">
+                            <img src="{{ related.image }}" alt="{{ related.name }}" class="h-full w-full object-cover">
                         {% else %}
                             <span class="text-gray-400">Pas d'image</span>
                         {% endif %}

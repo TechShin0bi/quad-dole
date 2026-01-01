@@ -4,89 +4,121 @@
 {% block title %}Catégories - Jimquad39{% endblock %}
 
 {% block page_title %}Nos Catégories{% endblock %}
-{% block page_subtitle %}Parcourez notre sélection de catégories de pièces détachées pour ATV/UTV{% endblock %}
+{% block page_subtitle %}
+Parcourez notre sélection de catégories de pièces détachées pour ATV / UTV
+{% endblock %}
 
 {% block header_actions %}
     {% if user.is_staff %}
-        <a href="{% url 'products:category-create' %}" 
-           class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center space-x-2">
+        <a href="{% url 'products:category-create' %}"
+           class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-medium text-white shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
             <i class="fas fa-plus"></i>
-            <span>Ajouter</span>
+            Ajouter une catégorie
         </a>
     {% endif %}
 {% endblock %}
 
 {% block list_content %}
-    <!-- Categories Grid -->
-    {% if page_obj %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {% for category in page_obj %}
-                <a href="{% url 'products:admin-category-detail' category.id %}" class="group">
-                    <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col hover:shadow-lg transition-shadow duration-300 border border-gray-100">
-                        <div class="h-16 w-16 bg-red-50 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:bg-red-100 transition-colors duration-300">
-                            {% if category.icon %}
-                                <i class="{{ category.icon }} text-xl text-red-600"></i>
-                            {% else %}
-                                <i class="fas fa-tag text-xl text-red-600"></i>
-                            {% endif %}
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-medium text-gray-900 group-hover:text-red-600">
-                                {{ category.name }}
-                            </h3>
-                            {% if user.is_staff %}
-                            <a href="{% url 'products:category-delete' category.id %}" class="text-red-500 hover:text-red-700" title="Supprimer">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </a>
-                            {% endif %}
-                        </div>
-                        
-                        {% if category.description %}
-                            <p class="mt-2 text-sm text-gray-500 text-center flex-grow">
-                                {{ category.description|truncatewords:15 }}
-                            </p>
-                        {% endif %}
-                        
-                        <div class="mt-4 flex justify-between items-center text-sm">
-                            <span class="text-gray-500">
-                                <i class="fas fa-boxes mr-1"></i>
-                                {{ category.product_count|default:0 }} produit{{ category.product_count|default:0|pluralize }}
-                            </span>
-                            <span class="text-red-600 font-medium">
-                                Voir <i class="fas fa-arrow-right ml-1"></i>
-                            </span>
-                        </div>
-                        
-                        {% if not category.is_active %}
-                            <div class="mt-3">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    <i class="fas fa-eye-slash mr-1"></i> Inactive
-                                </span>
-                            </div>
-                        {% endif %}
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
 
-        <!-- Pagination -->
-        {% include 'products/includes/pagination.html' %}
-    {% else %}
-        <div class="text-center py-12 bg-white rounded-lg shadow">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+{% if page_obj %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+    {% for category in page_obj %}
+    <div class="group relative rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg">
+
+        <!-- Delete (staff only) -->
+        {% if user.is_staff %}
+        <a href="{% url 'products:category-delete' category.id %}"
+           title="Supprimer"
+           class="absolute right-3 top-3 z-10 rounded-full bg-white p-2 text-gray-400 shadow hover:text-red-600 hover:shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/>
             </svg>
-            <h3 class="mt-2 text-lg font-medium text-gray-900">Aucune catégorie trouvée</h3>
-            <p class="mt-1 text-gray-500">Aucune catégorie ne correspond à vos critères de recherche.</p>
-            {% if request.GET %}
-                <div class="mt-4">
-                    <a href="{{ request.path }}" class="text-red-600 hover:text-red-800 font-medium">
-                        <i class="fas fa-undo-alt mr-1"></i> Réinitialiser les filtres
-                    </a>
-                </div>
+        </a>
+        {% endif %}
+
+        <a href="{% url 'products:admin-category-detail' category.id %}" class="block p-6 h-full">
+
+            <!-- Icon -->
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600 transition group-hover:bg-red-100">
+                {% if category.icon %}
+                    <i class="{{ category.icon }} text-xl"></i>
+                {% else %}
+                    <i class="fas fa-tags text-xl"></i>
+                {% endif %}
+            </div>
+
+            <!-- Title -->
+            <h3 class="mb-1 text-center text-lg font-semibold text-gray-900 group-hover:text-red-600">
+                {{ category.name }}
+            </h3>
+
+            <!-- Description -->
+            {% if category.description %}
+            <p class="mb-4 text-center text-sm text-gray-500">
+                {{ category.description|truncatewords:14 }}
+            </p>
             {% endif %}
-        </div>
+
+            <!-- Footer -->
+            <div class="mt-auto flex items-center justify-between text-sm text-gray-500">
+                <span class="flex items-center gap-1">
+                    <i class="fas fa-boxes"></i>
+                    {{ category.product_count|default:0 }}
+                    produit{{ category.product_count|default:0|pluralize }}
+                </span>
+
+                <span class="font-medium text-red-600 group-hover:underline">
+                    Voir →
+                </span>
+            </div>
+
+            <!-- Status -->
+            {% if not category.is_active %}
+            <div class="mt-4 text-center">
+                <span class="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+                    <i class="fas fa-eye-slash"></i>
+                    Inactive
+                </span>
+            </div>
+            {% endif %}
+
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% include 'products/includes/pagination.html' %}
+
+{% else %}
+
+<!-- Empty state -->
+<div class="rounded-xl bg-white p-12 text-center shadow">
+    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+    </div>
+
+    <h3 class="text-lg font-semibold text-gray-900">
+        Aucune catégorie trouvée
+    </h3>
+    <p class="mt-1 text-gray-500">
+        Aucune catégorie ne correspond à vos critères de recherche.
+    </p>
+
+    {% if request.GET %}
+    <a href="{{ request.path }}"
+       class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-red-600 hover:underline">
+        <i class="fas fa-undo-alt"></i>
+        Réinitialiser les filtres
+    </a>
     {% endif %}
+</div>
+
+{% endif %}
 {% endblock %}

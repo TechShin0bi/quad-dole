@@ -96,16 +96,20 @@
         </div>
 
         <!-- Orders -->
-        <a href="{% url 'orders:admin_order_list' %}"
-           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ease-in-out group text-gray-300 hover:bg-gray-800 hover:text-white">
-            <div class="flex items-center space-x-3">
-                <div class="p-1.5 rounded-lg bg-gray-700 group-hover:bg-amber-600">
-                    <i class="fas fa-shopping-cart w-4 h-4 text-center"></i>
-                </div>
-                <span>Orders</span>
-            </div>
-            <span class="ml-auto bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">3 New</span>
-        </a>
+       <a href="{% url 'orders:admin_order_list' %}"
+   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ease-in-out group text-gray-300 hover:bg-gray-800 hover:text-white">
+    <div class="flex items-center space-x-3">
+        <div class="p-1.5 rounded-lg bg-gray-700 group-hover:bg-orange-600">
+            <i class="fas fa-shopping-cart w-4 h-4 text-center"></i>
+        </div>
+        <span>Commandes</span>
+    </div>
+    {% if pending_orders_count > 0 %}
+    <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-red-500 text-white">
+        {{ pending_orders_count }}
+    </span>
+    {% endif %}
+</a>
 
         <!-- Customers -->
         <a href="{% url 'users:user-list'%}"

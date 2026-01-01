@@ -43,11 +43,11 @@
                 <div class="mb-4 bg-gray-100 rounded-lg overflow-hidden">
                     {% with featured_image=product.images.filter.is_featured.first|default:product.images.first %}
                         {% if featured_image %}
-                            <img id="main-image" src="{{ featured_image.image.url }}" 
+                            <img id="main-image" src="{{ featured_image.image }}" 
                                  alt="{{ featured_image.alt_text|default:product.name }}" 
                                  class="w-full h-auto rounded-lg transition-opacity duration-300">
                         {% elif product.image %}
-                            <img id="main-image" src="{{ product.image.url }}" 
+                            <img id="main-image" src="{{ product.image }}" 
                                  alt="{{ product.name }}" 
                                  class="w-full h-auto rounded-lg transition-opacity duration-300">
                         {% else %}
@@ -64,9 +64,9 @@
                 {% if product.images.exists %}
                 <div class="grid grid-cols-4 gap-2 mt-4">
                     {% for img in product.images.all %}
-                        <button onclick="changeMainImage('{{ img.image.url }}', '{{ img.alt_text|default:product.name }}')"
+                        <button onclick="changeMainImage('{{ img.image }}', '{{ img.alt_text|default:product.name }}')"
                                 class="border-2 rounded-md overflow-hidden {% if forloop.first or img.is_featured %}border-red-500{% else %}border-transparent hover:border-gray-300{% endif %}">
-                            <img src="{{ img.image.url }}" 
+                            <img src="{{ img.image }}" 
                                  alt="{{ img.alt_text|default:product.name }}" 
                                  class="w-full h-20 object-cover">
                         </button>
@@ -196,7 +196,7 @@
                     <a href="{{ related.get_absolute_url }}" class="block">
                         <div class="h-48 bg-gray-100 overflow-hidden">
                             {% if related.image %}
-                                <img src="{{ related.image.url }}" alt="{{ related.name }}" class="w-full h-full object-cover">
+                                <img src="{{ related.image }}" alt="{{ related.name }}" class="w-full h-full object-cover">
                             {% else %}
                                 <div class="w-full h-full flex items-center justify-center bg-gray-100">
                                     <svg class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

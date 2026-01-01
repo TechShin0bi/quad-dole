@@ -20,20 +20,56 @@
                     <img src="{% static 'images/home.png' %}" class="h-10" />
                     <span>ACCUEIL</span>
                 </a>
-                <div class="group relative">
-                    <a href="{% url 'users:register' %}" class="flex items-center space-x-2 text-gray-700 hover:text-red-600">
-                        <img src="{% static 'images/lock.png' %}" class="h-10" />
-                        <span>COMPTE</span>
-                    </a>
-                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
-                        <form method="post" action="{% url 'users:logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                Se déconnecter
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!-- In your base.html, replace the account section with this: -->
+<div class="group relative">
+    <a href="{% if user.is_authenticated %}#{% else %}{% url 'users:login' %}{% endif %}" 
+       class="flex items-center space-x-2 text-gray-700 hover:text-red-600">
+        <img src="{% static 'images/lock.png' %}" class="h-10" />
+        <span>{% if user.is_authenticated %}{{ user.email|truncatechars:15 }}{% else %}COMPTE{% endif %}</span>
+        {% if user.is_authenticated %}
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        {% endif %}
+    </a>
+    
+    {% if user.is_authenticated %}
+    <div class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
+        <!-- User Info -->
+        <div class="px-4 py-2 border-b border-gray-100">
+            <p class="text-sm font-medium text-gray-900">{{ user.get_full_name|default:user.email }}</p>
+            <p class="text-xs text-gray-500">{{ user.email }}</p>
+        </div>
+        
+        <!-- Navigation Links -->
+        <a href="{% url 'users:profile' %}" 
+           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            Mon Profil
+        </a>
+        <a href="{% url 'users:orders' %}" 
+           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            Mes Commandes
+        </a>
+        
+        <!-- Admin Link (only for staff) -->
+        {% if user.is_staff %}
+        <a href="{% url 'admins:admin-dashboard' %}" 
+           class="block px-4 py-2 text-sm text-blue-600 hover:bg-gray-100 border-t border-gray-100">
+            Administration
+        </a>
+        {% endif %}
+        
+        <!-- Logout Form -->
+        <form method="post" action="{% url 'users:logout' %}" class="border-t border-gray-100">
+            {% csrf_token %}
+            <button type="submit" 
+                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                Se déconnecter
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
             </div>
 
             <!-- Center (Logo) -->

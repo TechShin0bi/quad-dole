@@ -60,7 +60,7 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['name', 'category', 'model', 'image', 'description', 'price']
+        fields = ['name', 'category', 'image', 'description', 'price', 'sku']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
@@ -69,24 +69,26 @@ class ProductForm(forms.ModelForm):
             'category': forms.Select(attrs={
                 'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
             }),
-            'model': forms.Select(attrs={
-                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500  focus:border-indigo-500 sm:text-sm'
-            }),
-            'price': forms.NumberInput(attrs={
-                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500  focus:border-indigo-500 sm:text-sm',
-                'placeholder': '0.00'
+            'sku': forms.TextInput(attrs={
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                'placeholder': 'Enter SKU'
             }),
             'description': forms.Textarea(attrs={
-                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500  focus:border-indigo-500 sm:text-sm',
-                'rows': 4,
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                'rows': 3,
                 'placeholder': 'Enter product description'
             }),
-            'image': forms.ClearableFileInput(attrs={
-                'class': 'block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+            'price': forms.NumberInput(attrs={
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                'min': '0.01',
+                'step': '0.01',
+                'placeholder': '0.00'
+            }),
+            'image': forms.TextInput(attrs={
+                'class': 'block w-full rounded-md p-3 border-2 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                'placeholder': 'Enter image URL'
             }),
         }
-
-
 
 
 
