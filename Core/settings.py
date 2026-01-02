@@ -118,13 +118,25 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "neondb",
         "USER": "neondb_owner",
-        "PASSWORD": "npg_o8pkKqLJbWF4",
-        "HOST": "ep-tiny-bird-ad1quhax-pooler.c-2.us-east-1.aws.neon.tech",
+        "PASSWORD": "npg_fje5RuGBKk3a",
+        "HOST": "ep-lucky-art-a49uac6p-pooler.us-east-1.aws.neon.tech",
         "PORT": "5432",
         "OPTIONS": {
             "sslmode": "require",
         },
-    }
+    },
+    # Uncomment to use the unpooled connection
+    # 'unpooled': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'neondb',
+    #     'USER': 'neondb_owner',
+    #     'PASSWORD': 'npg_fje5RuGBKk3a',
+    #     'HOST': 'ep-lucky-art-a49uac6p.us-east-1.aws.neon.tech',
+    #     'PORT': '5432',
+    #     'OPTIONS': {
+    #         'sslmode': 'require',
+    #     },
+    # }
 }
 
 
