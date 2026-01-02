@@ -27,7 +27,8 @@ SECRET_KEY = "django-insecure-zm+_#bi0bc#&%h3rfe*#4%77r#0#6cxe3+ncgp(en$urj#my2i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*.vercel.app"]
+
 
 # Custom user model
 AUTH_USER_MODEL = "users.User"
@@ -45,8 +46,10 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
 
 # Cart settings
-CART_SESSION_ID = 'cart'  # Key to store the cart in the user session
-CART_ITEM_MAX_QUANTITY = 20  # Maximum quantity of a single product that can be added to the cart
+CART_SESSION_ID = "cart"  # Key to store the cart in the user session
+CART_ITEM_MAX_QUANTITY = (
+    20  # Maximum quantity of a single product that can be added to the cart
+)
 
 # Application definition
 
@@ -73,6 +76,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",   
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -110,15 +114,15 @@ WSGI_APPLICATION = "Core.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'neondb',
-        'USER': 'neondb_owner',
-        'PASSWORD': 'npg_o8pkKqLJbWF4',
-        'HOST': 'ep-tiny-bird-ad1quhax-pooler.c-2.us-east-1.aws.neon.tech',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "neondb",
+        "USER": "neondb_owner",
+        "PASSWORD": "npg_o8pkKqLJbWF4",
+        "HOST": "ep-tiny-bird-ad1quhax-pooler.c-2.us-east-1.aws.neon.tech",
+        "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "require",
         },
     }
 }
@@ -188,17 +192,17 @@ LOGIN_URL = "login"
 
 # Email settings (for development)
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 
-EMAIL_HOST_USER = 'Jimquads39@gmail.com'          # your Gmail address
-EMAIL_HOST_PASSWORD = 'homt dawb vdcs agnv'    # your app password from step 1
+EMAIL_HOST_USER = "Jimquads39@gmail.com"  # your Gmail address
+EMAIL_HOST_PASSWORD = "homt dawb vdcs agnv"  # your app password from step 1
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 ADMINS = [
-    ('Jimquads Admin', 'Borelngapurth12@gmail.com'),
+    ("Jimquads Admin", "Borelngapurth12@gmail.com"),
 ]
 
 
